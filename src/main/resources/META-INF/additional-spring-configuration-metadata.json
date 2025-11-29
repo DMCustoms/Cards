@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "aes.encryption.secret",
+  "type": "java.lang.String",
+  "description": "Secret key to encrypt card number with AES algorithm"
+}]}

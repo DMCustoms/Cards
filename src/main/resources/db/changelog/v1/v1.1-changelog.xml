@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet author="DMCustoms" id="v1.1-1">
+    	<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="cards" />
+			</not>
+		</preConditions>
+        <createTable tableName="cards">
+            <column name="card_balance" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_status" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="limit_per_day" type="FLOAT8"/>
+            <column name="limit_per_month" type="FLOAT8"/>
+            <column name="card_owner" type="BIGINT">
+            </column>
+            <column name="expired_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="cards_pkey"/>
+            </column>
+            <column name="card_number" type="bytea">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <sql>
+        	ALTER TABLE cards ADD CONSTRAINT chk_balance CHECK (card_balance > -1);
+        	ALTER TABLE cards ADD CONSTRAINT chk_limit_per_day CHECK (limit_per_day >= -1);
+        	ALTER TABLE cards ADD CONSTRAINT chk_limit_per_month CHECK (limit_per_month >= -1);
+        </sql>
+        <rollback>
+        	DROP TABLE cards;
+        </rollback>
+    </changeSet>
+    
+    <changeSet author="DMCustoms" id="v1.1-2">
+    	<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="transactions" />
+			</not>
+		</preConditions>
+        <createTable tableName="transactions">
+            <column name="transaction_type" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_value" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_recipient" type="BIGINT">
+            </column>
+            <column name="card_source" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="transactions_pkey"/>
+            </column>
+            <column name="transaction_date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+        	DROP TABLE transactions;
+        </rollback>
+    </changeSet>
+    
+    <changeSet author="DMCustoms" id="v1.1-3">
+    	<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="users" />
+			</not>
+		</preConditions>
+        <createTable tableName="users">
+            <column name="acc_enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="acc_non_expired" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="acc_non_locked" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creds_non_expired" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="user_lastname" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_name" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_surname" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_email" type="VARCHAR(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="user_password" type="VARCHAR(80)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_authorities" type="INT2[]">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+        	DROP TABLE users;
+        </rollback>
+    </changeSet>
+    
+    <changeSet author="DMCustoms" id="v1.1-4">
+        <addForeignKeyConstraint baseColumnNames="card_recipient" baseTableName="transactions" constraintName="fk1goedpgk6anyfqjq6mhml9mg6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="cards" validate="true"/>
+    </changeSet>
+    
+    <changeSet author="DMCustoms" id="v1.1-5">
+        <addForeignKeyConstraint baseColumnNames="card_owner" baseTableName="cards" constraintName="fk61jo2o5miirxh7bcgiun43yve" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    
+    <changeSet author="DMCustoms" id="v1.1-6">
+        <addForeignKeyConstraint baseColumnNames="card_source" baseTableName="transactions" constraintName="fk8pde94iwjkw0vvjolqjv8ktkq" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="cards" validate="true"/>
+    </changeSet>
+
+</databaseChangeLog>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -120,6 +120,18 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+    			 <groupId>org.liquibase</groupId>
+   				 <artifactId>liquibase-maven-plugin</artifactId>
+    			 <version>5.0.1</version><!--$NO-MVN-MAN-VER$-->
+    			 <configuration>
+        			<propertyFile>/src/main/resources/liquibase.properties</propertyFile>
+        			<systemProperties>
+            			<user.name>DMCustoms</user.name>
+        			</systemProperties>
+        		 	<logging>info</logging>
+    			 </configuration>
+			</plugin>
 		</plugins>
 	</build>
 
