@@ -1,6 +1,7 @@
 package com.dmcustoms.app.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -28,11 +29,11 @@ public class AdminController {
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> showUsers() {
+	public ResponseEntity<List<UserShowDTO>> showUsers() {
 		List<User> usersFromDB = userRepository.findAll().stream()
 				.filter(user -> user.getAuthorities().contains(Authorities.USER)).toList();
 		if (usersFromDB.isEmpty())
-			return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.NO_CONTENT);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Arrays.asList());
 		List<UserShowDTO> usersToResponse = new ArrayList<UserShowDTO>();
 		for (User user : usersFromDB) {
 			usersToResponse

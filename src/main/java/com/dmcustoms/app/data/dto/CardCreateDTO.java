@@ -16,15 +16,15 @@ public class CardCreateDTO {
 	private final String cardNumber;
 
 	@NotBlank(message = "Balance is required")
-	@PositiveOrZero
+	@PositiveOrZero(message = "Must be most or equals zero")
 	private final Double balance;
 
 	@NotBlank(message = "Limit per day is required")
-	@PositiveOrZero
+	@PositiveOrZero(message = "Must be most or equals zero")
 	private final Double limitPerDay;
 
 	@NotBlank(message = "Limit per month is required")
-	@PositiveOrZero
+	@PositiveOrZero(message = "Must be most or equals zero")
 	private final Double LimitPerMonth;
 	
 }
