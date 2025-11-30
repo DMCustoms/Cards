@@ -32,11 +32,11 @@ public class CardsApplication {
 		return args -> {
 			if (userRepository.count() == 0 && cardRepository.count() == 0) {
 				Card card1 = new Card("2202202044507626", Instant.now().plus(Duration.ofDays(1825)), CardStatus.ACTIVE,
-						17000., -1., -1.);
+						17000.93, 100000000.00, 100000000.00);
 				Card card2 = new Card("2202202044507627", Instant.now().plus(Duration.ofDays(1825)), CardStatus.ACTIVE,
-						1500., -1., -1.);
+						1500.23, 100000000.00, 100000000.00);
 				Card card3 = new Card("2202202044507628", Instant.now().plus(Duration.ofDays(1825)), CardStatus.ACTIVE,
-						90235., -1., -1.);
+						90235.99, 100000000.00, 100000000.00);
 
 				cardRepository.save(card1);
 				cardRepository.save(card2);

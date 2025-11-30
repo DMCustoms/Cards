@@ -39,9 +39,9 @@
             </column>
         </createTable>
         <sql>
-        	ALTER TABLE cards ADD CONSTRAINT chk_balance CHECK (card_balance > -1);
-        	ALTER TABLE cards ADD CONSTRAINT chk_limit_per_day CHECK (limit_per_day >= -1);
-        	ALTER TABLE cards ADD CONSTRAINT chk_limit_per_month CHECK (limit_per_month >= -1);
+        	ALTER TABLE cards ADD CONSTRAINT chk_balance CHECK (card_balance >= 0);
+        	ALTER TABLE cards ADD CONSTRAINT chk_limit_per_day CHECK (limit_per_day >= 0);
+        	ALTER TABLE cards ADD CONSTRAINT chk_limit_per_month CHECK (limit_per_month >= 0);
         </sql>
         <rollback>
         	DROP TABLE cards;

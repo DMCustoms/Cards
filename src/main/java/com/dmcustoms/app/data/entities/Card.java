@@ -14,7 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,7 +48,6 @@ public class Card {
 	private CardStatus status;
 	
 	@Column(name = "card_balance", nullable = false)
-	@Min(0)
 	@NonNull
 	private Double balance;
 	

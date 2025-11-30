@@ -1,0 +1,44 @@
+package com.dmcustoms.app.web;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dmcustoms.app.data.dto.CardShowDTO;
+import com.dmcustoms.app.data.entities.Card;
+import com.dmcustoms.app.data.entities.User;
+import com.dmcustoms.app.data.repositories.CardRepository;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@RestController
+@AllArgsConstructor
+@RequestMapping(path = "/api/user", produces = "application/json")
+public class UserController {
+
+	private CardRepository cardRepository;
+
+	@GetMapping("/cards")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<?> showUserCards(@AuthenticationPrincipal User user) {
+		List<Card> userCardsFromDB = cardRepository.findCardsByOwner(user);
+		if (userCardsFromDB.isEmpty())
+			return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.NO_CONTENT);
+		List<CardShowDTO> userCardsToResponse = new ArrayList<CardShowDTO>();
+		for (Card card : userCardsFromDB) {
+			userCardsToResponse.add(new CardShowDTO(card.getCardNumber(), card.getExpiredAt(), card.getStatus(),
+					card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth()));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(userCardsToResponse);
+	}
+
+}
