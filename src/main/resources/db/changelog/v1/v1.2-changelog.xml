@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+	<changeSet author="DMCustoms" id="v1.2-1">
+		<preConditions>
+			<not>
+				<tableExists tableName="t_deactivated_token" />
+			</not>
+		</preConditions>
+		<createTable tableName="deactivated_token">
+			<column name="id" type="uuid">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="keep_until" type="timestamp"></column>
+		</createTable>
+		<sql>
+			ALTER TABLE deactivated_token ADD CONSTRAINT chk_keep_until CHECK
+			(keep_until > now());
+		</sql>
+		<rollback>
+			DROP TABLE deactivated_token;
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>
+
+
+
+
+
+
+
+
+
+
+
+
+
