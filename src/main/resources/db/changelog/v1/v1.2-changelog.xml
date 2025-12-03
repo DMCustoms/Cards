@@ -14,7 +14,7 @@
 	<changeSet author="DMCustoms" id="v1.2-1">
 		<preConditions>
 			<not>
-				<tableExists tableName="t_deactivated_token" />
+				<tableExists tableName="deactivated_token" />
 			</not>
 		</preConditions>
 		<createTable tableName="deactivated_token">

@@ -5,6 +5,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -12,6 +13,8 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 
 import com.dmcustoms.app.data.repositories.DeactivatedTokenRepository;
 import com.dmcustoms.app.data.repositories.UserRepository;
+import com.dmcustoms.app.jwt.filters.LogoutFilter;
+import com.dmcustoms.app.jwt.filters.RefreshTokenFilter;
 import com.dmcustoms.app.jwt.filters.RequestTokenFilter;
 import com.dmcustoms.app.jwt.serializers.AccessTokenDeserializer;
 import com.dmcustoms.app.jwt.serializers.AccessTokenSerializer;
@@ -61,25 +64,13 @@ public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthe
 		PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider = new PreAuthenticatedAuthenticationProvider();
 		preAuthenticatedAuthenticationProvider.setPreAuthenticatedUserDetailsService(
 				new TokenAuthenticationUserDetailsService(this.deactivatedTokenRepository, this.userRepository));
-		
+		RefreshTokenFilter refreshTokenFilter = new RefreshTokenFilter(this.accessTokenSerializer);
+		LogoutFilter logoutFilter = new LogoutFilter(this.deactivatedTokenRepository);
+		builder.addFilterBefore(requestTokenFilter, ExceptionTranslationFilter.class)
+				.addFilterBefore(authenticationFilter, CsrfFilter.class)
+				.addFilterBefore(refreshTokenFilter, ExceptionTranslationFilter.class)
+				.addFilterBefore(logoutFilter, ExceptionTranslationFilter.class)
+				.authenticationProvider(preAuthenticatedAuthenticationProvider);
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

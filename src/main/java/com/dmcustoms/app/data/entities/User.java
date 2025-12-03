@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.dmcustoms.app.data.types.Authorities;
+import com.dmcustoms.app.jwt.core.Token;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -80,6 +82,9 @@ public class User implements UserDetails {
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "card_owner")
 	private List<Card> cards = new ArrayList<Card>();
+	
+	@Transient
+	private Token token;
 	
 	public void addCard(Card card) {
 		this.cards.add(card);

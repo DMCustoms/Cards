@@ -31,9 +31,9 @@ public class RefreshTokenDeserializer implements Function<String, Token> {
 					jwtClaimsSet.getStringListClaim("authorities"), jwtClaimsSet.getIssueTime().toInstant(),
 					jwtClaimsSet.getExpirationTime().toInstant());
 		} catch (ParseException | JOSEException e) {
-			log.error(e.getMessage(), e);
+			log.warn(e.getMessage(), e);
+			return null;
 		}
-		return null;
 	}
 
 }

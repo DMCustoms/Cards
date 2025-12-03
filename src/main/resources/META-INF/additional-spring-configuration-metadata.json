@@ -1,5 +1,17 @@
-{"properties": [{
-  "name": "aes.encryption.secret",
-  "type": "java.lang.String",
-  "description": "Secret key to encrypt card number with AES algorithm"
-}]}
+{"properties": [
+  {
+    "name": "aes.encryption.secret",
+    "type": "java.lang.String",
+    "description": "Secret key to encrypt card number with AES algorithm"
+  },
+  {
+    "name": "jwt.refresh-token-key",
+    "type": "java.lang.String",
+    "description": "Key to sign and verify access token"
+  },
+  {
+    "name": "jwt.access-token-key",
+    "type": "java.lang.String",
+    "description": "Key to encrypt and decrypt refresh token"
+  }
+]}

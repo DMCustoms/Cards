@@ -30,11 +30,13 @@ public class AccessTokenDeserializer implements Function<String, Token> {
 				return new Token(UUID.fromString(jwtClaimsSet.getJWTID()), jwtClaimsSet.getSubject(),
 						jwtClaimsSet.getStringListClaim("authorities"), jwtClaimsSet.getIssueTime().toInstant(),
 						jwtClaimsSet.getExpirationTime().toInstant());
+			} else {
+				return null;
 			}
 		} catch (ParseException | JOSEException e) {
-			log.error(e.getMessage(), e);
+			log.warn(e.getMessage());
+			return null;
 		}
-		return null;
 	}
 
 }

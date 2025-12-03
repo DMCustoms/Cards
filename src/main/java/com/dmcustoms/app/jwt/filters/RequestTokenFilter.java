@@ -13,7 +13,7 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.dmcustoms.app.data.dto.TokenDTO;
+import com.dmcustoms.app.data.dto.TokensDTO;
 import com.dmcustoms.app.jwt.core.AccessTokenFactory;
 import com.dmcustoms.app.jwt.core.RefreshTokenFactory;
 import com.dmcustoms.app.jwt.core.Token;
@@ -27,9 +27,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 
 @Data
+@Slf4j
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class RequestTokenFilter extends OncePerRequestFilter {
@@ -60,12 +62,13 @@ public class RequestTokenFilter extends OncePerRequestFilter {
 					Token accessToken = this.accessTokenFactory.apply(refreshToken);
 					response.setStatus(HttpServletResponse.SC_OK);
 					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-					this.objectMapper.writeValue(response.getWriter(), new TokenDTO(
+					this.objectMapper.writeValue(response.getWriter(), new TokensDTO(
 							this.accessTokenSerializer.apply(accessToken), accessToken.getExpiresAt().toString(),
 							this.refreshTokenSerializer.apply(refreshToken), refreshToken.getExpiresAt().toString()));
 					return;
 				}
 			}
+			log.warn("Caused issue in RequestTokenFilter.class");
 			throw new AccessDeniedException("Unauthenticated user");
 		}
 		filterChain.doFilter(request, response);
