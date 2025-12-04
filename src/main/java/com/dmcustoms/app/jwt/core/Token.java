@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import com.dmcustoms.app.data.types.JwtAuthorities;
+
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +17,7 @@ public class Token {
 	
 	private final String subject;
 	
-	private final List<String> authorities;
+	private final List<JwtAuthorities> authorities;
 	
 	private final Instant createdAt;
 	

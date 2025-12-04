@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.dmcustoms.app.data.dto.AccessTokenDTO;
 import com.dmcustoms.app.data.entities.User;
+import com.dmcustoms.app.data.types.JwtAuthorities;
 import com.dmcustoms.app.jwt.core.AccessTokenFactory;
 import com.dmcustoms.app.jwt.core.Token;
 import com.dmcustoms.app.jwt.serializers.AccessTokenSerializer;
@@ -26,9 +27,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 
 @Data
+@Slf4j
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class RefreshTokenFilter extends OncePerRequestFilter {
@@ -52,7 +55,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 				SecurityContext context = this.securityContextRepository.loadDeferredContext(request).get();
 				if (context != null && context.getAuthentication() instanceof PreAuthenticatedAuthenticationToken
 						&& context.getAuthentication().getPrincipal() instanceof User user
-						&& user.getToken().getAuthorities().contains("JWT_REFRESH")) {
+						&& user.getToken().getAuthorities().contains(JwtAuthorities.JWT_REFRESH)) {
 					Token accessToken = this.accessTokenFactory.apply(user.getToken());
 					response.setStatus(HttpServletResponse.SC_OK);
 					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -62,7 +65,8 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 					return;
 				}
 			}
-			throw new AccessDeniedException("Must be JWT");
+			log.error("Caused issue in RefreshTokenFilter.class");
+			throw new AccessDeniedException("Caused issue in RefreshTokenFilter.class");
 		}
 		filterChain.doFilter(request, response);
 	}

@@ -2,7 +2,10 @@ package com.dmcustoms.app.jwt.core;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.function.Function;
+
+import com.dmcustoms.app.data.types.JwtAuthorities;
 
 public class AccessTokenFactory implements Function<Token, Token> {
 
@@ -11,9 +14,7 @@ public class AccessTokenFactory implements Function<Token, Token> {
 	@Override
 	public Token apply(Token token) {
 		Instant now = Instant.now();
-		return new Token(token.getId(), token.getSubject(),
-				token.getAuthorities().stream().filter(authority -> authority.startsWith("GRANT_"))
-						.map(authority -> authority.replace("GRANT_", "")).toList(),
+		return new Token(token.getId(), token.getSubject(), Arrays.asList(JwtAuthorities.JWT_ACCESS),
 				now, now.plus(this.ttl));
 	}
 

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.UUID;
 import java.util.function.Function;
 
+import com.dmcustoms.app.data.types.JwtAuthorities;
 import com.dmcustoms.app.jwt.core.Token;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEDecrypter;
@@ -28,8 +29,9 @@ public class RefreshTokenDeserializer implements Function<String, Token> {
 			encryptedJWT.decrypt(jweDecrypter);
 			JWTClaimsSet jwtClaimsSet = encryptedJWT.getJWTClaimsSet();
 			return new Token(UUID.fromString(jwtClaimsSet.getJWTID()), jwtClaimsSet.getSubject(),
-					jwtClaimsSet.getStringListClaim("authorities"), jwtClaimsSet.getIssueTime().toInstant(),
-					jwtClaimsSet.getExpirationTime().toInstant());
+					jwtClaimsSet.getStringListClaim("authorities").stream()
+							.map(authority -> Enum.valueOf(JwtAuthorities.class, authority)).toList(),
+					jwtClaimsSet.getIssueTime().toInstant(), jwtClaimsSet.getExpirationTime().toInstant());
 		} catch (ParseException | JOSEException e) {
 			log.warn(e.getMessage(), e);
 			return null;

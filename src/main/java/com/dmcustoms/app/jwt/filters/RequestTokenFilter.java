@@ -68,8 +68,8 @@ public class RequestTokenFilter extends OncePerRequestFilter {
 					return;
 				}
 			}
-			log.warn("Caused issue in RequestTokenFilter.class");
-			throw new AccessDeniedException("Unauthenticated user");
+			log.error("Caused issue in RequestTokenFilter.class");
+			throw new AccessDeniedException("Caused issue in RequestTokenFilter.class");
 		}
 		filterChain.doFilter(request, response);
 	}

@@ -7,7 +7,8 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+
+import com.dmcustoms.app.data.types.JwtAuthorities;
 
 public class RefreshTokenFactory implements Function<Authentication, Token> {
 
@@ -15,11 +16,9 @@ public class RefreshTokenFactory implements Function<Authentication, Token> {
 
 	@Override
 	public Token apply(Authentication authentication) {
-		LinkedList<String> authorities = new LinkedList<String>();
-		authorities.add("JWT_REFRESH");
-		authorities.add("JWT_LOGOUT");
-		authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-				.map(authority -> "GRANT_" + authority).forEach(authorities::add);
+		LinkedList<JwtAuthorities> authorities = new LinkedList<JwtAuthorities>();
+		authorities.add(JwtAuthorities.JWT_REFRESH);
+		authorities.add(JwtAuthorities.JWT_LOGOUT);
 		Instant now = Instant.now();
 		return new Token(UUID.randomUUID(), authentication.getName(), authorities, now, now.plus(this.ttl));
 	}

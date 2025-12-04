@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.UUID;
 import java.util.function.Function;
 
+import com.dmcustoms.app.data.types.JwtAuthorities;
 import com.dmcustoms.app.jwt.core.Token;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
@@ -28,8 +29,9 @@ public class AccessTokenDeserializer implements Function<String, Token> {
 			if (signedJWT.verify(jwsVerifier)) {
 				JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
 				return new Token(UUID.fromString(jwtClaimsSet.getJWTID()), jwtClaimsSet.getSubject(),
-						jwtClaimsSet.getStringListClaim("authorities"), jwtClaimsSet.getIssueTime().toInstant(),
-						jwtClaimsSet.getExpirationTime().toInstant());
+						jwtClaimsSet.getStringListClaim("authorities").stream()
+								.map(authority -> Enum.valueOf(JwtAuthorities.class, authority)).toList(),
+						jwtClaimsSet.getIssueTime().toInstant(), jwtClaimsSet.getExpirationTime().toInstant());
 			} else {
 				return null;
 			}

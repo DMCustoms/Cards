@@ -5,6 +5,7 @@ import java.text.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import com.dmcustoms.app.data.repositories.DeactivatedTokenRepository;
 import com.dmcustoms.app.data.repositories.UserRepository;
@@ -61,15 +63,27 @@ public class SecurityConfigurer {
 	}
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationConfigurer jwtAuthenticationConfigurer) {
-		return http
-				.with(jwtAuthenticationConfigurer, Customizer.withDefaults())
-				.httpBasic(Customizer.withDefaults())
+	@Order(1)
+	SecurityFilterChain loginSecurityFilterChain(HttpSecurity http,
+			JwtAuthenticationConfigurer jwtAuthenticationConfigurer) {
+		return http.with(jwtAuthenticationConfigurer, Customizer.withDefaults())
+				.sessionManagement(
+						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.securityMatcher(PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/api/jwt/**"))
+				.authorizeHttpRequests(authorizeHttpRequests -> {
+					authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/api/jwt/**").authenticated();
+				}).httpBasic(Customizer.withDefaults()).build();
+	}
+
+	@Bean
+	@Order(2)
+	SecurityFilterChain securityFilterChain(HttpSecurity http,
+			JwtAuthenticationConfigurer jwtAuthenticationConfigurer) {
+		return http.with(jwtAuthenticationConfigurer, Customizer.withDefaults())
 				.sessionManagement(
 						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorizeHttpRequests -> {
-					authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/api/jwt/**").hasAnyRole("USER", "ADMIN")
-							.requestMatchers(HttpMethod.GET, "/api/user/**").hasRole("USER")
+					authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/api/user/**").hasRole("USER")
 							.requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
 							.requestMatchers(HttpMethod.GET, "/error").permitAll().anyRequest().denyAll();
 				}).build();

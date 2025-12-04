@@ -33,7 +33,9 @@ public class RefreshTokenSerializer implements Function<Token, String> {
 				.keyID(token.getId().toString()).build();
 		JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder().jwtID(token.getId().toString())
 				.subject(token.getSubject()).issueTime(Date.from(token.getCreatedAt()))
-				.expirationTime(Date.from(token.getExpiresAt())).claim("authorities", token.getAuthorities()).build();
+				.expirationTime(Date.from(token.getExpiresAt()))
+				.claim("authorities", token.getAuthorities().stream().map(authority -> authority.authority).toList())
+				.build();
 		EncryptedJWT encryptedJWT = new EncryptedJWT(jweHeader, jwtClaimsSet);
 		try {
 			encryptedJWT.encrypt(jweEncrypter);
