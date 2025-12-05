@@ -28,7 +28,7 @@ public class UserControllerTests {
 
 	@Test
 	void test_showUserCards_unauthorized() throws Exception {
-		this.mockMvc.perform(get("/api/user/cards")).andExpect(status().isUnauthorized());
+		this.mockMvc.perform(get("/api/user/cards")).andExpect(status().isForbidden());
 	}
 	
 	@Test

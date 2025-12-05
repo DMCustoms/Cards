@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
+import com.dmcustoms.app.jwt.filters.GetCsrfTokenFilter;
 import com.dmcustoms.app.data.repositories.DeactivatedTokenRepository;
 import com.dmcustoms.app.data.repositories.UserRepository;
 import com.dmcustoms.app.jwt.filters.LogoutFilter;
@@ -66,10 +67,12 @@ public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthe
 				new TokenAuthenticationUserDetailsService(this.deactivatedTokenRepository, this.userRepository));
 		RefreshTokenFilter refreshTokenFilter = new RefreshTokenFilter(this.accessTokenSerializer);
 		LogoutFilter logoutFilter = new LogoutFilter(this.deactivatedTokenRepository);
+		GetCsrfTokenFilter getCsrfTokenFilter = new GetCsrfTokenFilter();
 		builder.addFilterBefore(requestTokenFilter, ExceptionTranslationFilter.class)
 				.addFilterBefore(authenticationFilter, CsrfFilter.class)
 				.addFilterBefore(refreshTokenFilter, ExceptionTranslationFilter.class)
 				.addFilterBefore(logoutFilter, ExceptionTranslationFilter.class)
+				.addFilterBefore(getCsrfTokenFilter, ExceptionTranslationFilter.class)
 				.authenticationProvider(preAuthenticatedAuthenticationProvider);
 	}
 

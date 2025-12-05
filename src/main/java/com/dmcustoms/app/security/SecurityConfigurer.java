@@ -83,8 +83,9 @@ public class SecurityConfigurer {
 				.sessionManagement(
 						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorizeHttpRequests -> {
-					authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/api/user/**").hasRole("USER")
-							.requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
+					authorizeHttpRequests.requestMatchers("/api/user/**").hasRole("USER")
+							.requestMatchers("/api/admin/**").hasRole("ADMIN")
+							.requestMatchers(HttpMethod.GET, "/api/csrf").authenticated()
 							.requestMatchers(HttpMethod.GET, "/error").permitAll().anyRequest().denyAll();
 				}).build();
 	}

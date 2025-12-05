@@ -1,7 +1,6 @@
 package com.dmcustoms.app.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -30,10 +29,10 @@ public class UserController {
 
 	@GetMapping("/cards")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<List<CardShowDTO>> showUserCards(@AuthenticationPrincipal User user) {
+	public ResponseEntity<?> showUserCards(@AuthenticationPrincipal User user) {
 		List<Card> userCardsFromDB = cardRepository.findCardsByOwner(user);
 		if (userCardsFromDB.isEmpty())
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Arrays.asList());
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		List<CardShowDTO> userCardsToResponse = new ArrayList<CardShowDTO>();
 		for (Card card : userCardsFromDB) {
 			userCardsToResponse.add(new CardShowDTO(card.getCardNumber(), card.getExpiredAt(), card.getStatus(),

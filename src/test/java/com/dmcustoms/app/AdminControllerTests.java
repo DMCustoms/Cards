@@ -26,7 +26,7 @@ public class AdminControllerTests {
 
 	@Test
 	void test_showUsers_unauthorized() throws Exception {
-		this.mockMvc.perform(get("/api/admin/users")).andExpect(status().isUnauthorized());
+		this.mockMvc.perform(get("/api/admin/users")).andExpect(status().isForbidden());
 	}
 	
 	@Test
