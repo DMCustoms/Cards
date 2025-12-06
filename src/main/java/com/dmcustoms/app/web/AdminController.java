@@ -67,7 +67,7 @@ public class AdminController {
 			User savedUser = userRepository.save(user);
 			UserShowDTO savedUserToResponse = new UserShowDTO(savedUser.getSurname(), savedUser.getName(),
 					savedUser.getLastname(), savedUser.getEmail());
-			return ResponseEntity.status(HttpStatus.OK).body(savedUserToResponse);
+			return ResponseEntity.status(HttpStatus.CREATED).body(savedUserToResponse);
 		} catch (DataIntegrityViolationException e) {
 			if (e.getLocalizedMessage().contains("ERROR: duplicate key value violates unique constraint"))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)

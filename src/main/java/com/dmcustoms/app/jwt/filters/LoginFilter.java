@@ -34,10 +34,10 @@ import tools.jackson.databind.ObjectMapper;
 @Slf4j
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class RequestTokenFilter extends OncePerRequestFilter {
+public class LoginFilter extends OncePerRequestFilter {
 
 	private final RequestMatcher requestMatcher = PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,
-			"/api/jwt/access");
+			"/api/jwt/login");
 
 	private final SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
 

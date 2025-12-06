@@ -1,23 +1,36 @@
 package com.dmcustoms.app;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.dmcustoms.app.data.dto.UserCreateDTO;
+
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class AdminControllerTests {
 
-	MockMvc mockMvc;
+	private MockMvc mockMvc;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@BeforeEach
 	void setUp(ApplicationContext applicationContext) {
@@ -28,21 +41,72 @@ public class AdminControllerTests {
 	void test_showUsers_unauthorized() throws Exception {
 		this.mockMvc.perform(get("/api/admin/users")).andExpect(status().isForbidden());
 	}
-	
+
 	@Test
 	@WithUserDetails("s.petrov@test.com")
 	void test_showUsers_notAdmin() throws Exception {
 		this.mockMvc.perform(get("/api/admin/users")).andExpect(status().isForbidden());
 	}
-	
+
 	@Test
 	@WithUserDetails("v.sergeev@test.com")
 	void test_showUsers_authorized() throws Exception {
 		this.mockMvc.perform(get("/api/admin/users")).andExpect(status().isOk());
-		
+
 		MvcResult result = mockMvc.perform(get("/api/admin/users")).andReturn();
 		assertNotNull(result);
 		assertEquals(result.getResponse().getContentType(), "application/json");
 	}
 
+	@Test
+	void test_createUser_unauthorized() throws Exception {
+		this.mockMvc.perform(post("/api/admin/create/user")).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("s.petrov@test.com")
+	void test_createUser_notAdmin() throws Exception {
+		this.mockMvc.perform(post("/api/admin/create/user")).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_createUser_authorized_blankFields() throws Exception {
+		UserCreateDTO object = new UserCreateDTO("", "", "", "", "");
+		this.mockMvc
+				.perform(post("/api/admin/create/user").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_createUser_authorized_notValidEmail() throws Exception {
+		UserCreateDTO object = new UserCreateDTO("Ivanov", "Ivan", "Ivanovich", "i.ivanov", "password");
+		this.mockMvc
+				.perform(post("/api/admin/create/user").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_createUser_authorized_notUniqueEmail() throws Exception {
+		UserCreateDTO object = new UserCreateDTO("Ivanov", "Ivan", "Ivanovich", "i.ivanov@test.com", "password");
+		this.mockMvc
+				.perform(post("/api/admin/create/user").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_createUser_authorized_created() throws Exception {
+		UserCreateDTO object = new UserCreateDTO("Ivanov", "Ivan", "Ivanovich", "i.i.ivanov@test.com", "password");
+		this.mockMvc
+				.perform(post("/api/admin/create/user").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated());
+	}
+	
 }

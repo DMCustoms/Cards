@@ -16,7 +16,7 @@ import com.dmcustoms.app.data.repositories.DeactivatedTokenRepository;
 import com.dmcustoms.app.data.repositories.UserRepository;
 import com.dmcustoms.app.jwt.filters.LogoutFilter;
 import com.dmcustoms.app.jwt.filters.RefreshTokenFilter;
-import com.dmcustoms.app.jwt.filters.RequestTokenFilter;
+import com.dmcustoms.app.jwt.filters.LoginFilter;
 import com.dmcustoms.app.jwt.serializers.AccessTokenDeserializer;
 import com.dmcustoms.app.jwt.serializers.AccessTokenSerializer;
 import com.dmcustoms.app.jwt.serializers.RefreshTokenDeserializer;
@@ -50,12 +50,12 @@ public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthe
 		CsrfConfigurer<?> csrfConfigurer = builder.getConfigurer(CsrfConfigurer.class);
 		if (csrfConfigurer != null)
 			csrfConfigurer.ignoringRequestMatchers(
-					PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/jwt/access"));
+					PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/jwt/login"));
 	}
 
 	@Override
 	public void configure(HttpSecurity builder) {
-		RequestTokenFilter requestTokenFilter = new RequestTokenFilter(refreshTokenSerializer, accessTokenSerializer);
+		LoginFilter requestTokenFilter = new LoginFilter(refreshTokenSerializer, accessTokenSerializer);
 		AuthenticationFilter authenticationFilter = new AuthenticationFilter(
 				(AuthenticationManager) builder.getSharedObject(AuthenticationManager.class),
 				new JwtAuthenticationConverter(this.accessTokenDeserializer, this.refreshTokenDeserializer));
