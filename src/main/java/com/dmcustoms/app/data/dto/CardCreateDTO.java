@@ -3,6 +3,7 @@ package com.dmcustoms.app.data.dto;
 import org.hibernate.validator.constraints.CreditCardNumber;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,16 +16,16 @@ public class CardCreateDTO {
 	@CreditCardNumber(message = "Credit card number is incorrect")
 	private final String cardNumber;
 
-	@NotBlank(message = "Balance is required")
+	@NotNull(message = "Balance is required")
 	@PositiveOrZero(message = "Must be most or equals zero")
 	private final Double balance;
 
-	@NotBlank(message = "Limit per day is required")
+	@NotNull(message = "Limit per day is required")
 	@PositiveOrZero(message = "Must be most or equals zero")
 	private final Double limitPerDay;
 
-	@NotBlank(message = "Limit per month is required")
+	@NotNull(message = "Limit per month is required")
 	@PositiveOrZero(message = "Must be most or equals zero")
-	private final Double LimitPerMonth;
+	private final Double limitPerMonth;
 	
 }
