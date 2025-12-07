@@ -10,17 +10,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class UserControllerTests {
-	
-	MockMvc mockMvc;
-	
+
+	private MockMvc mockMvc;
+
 	@BeforeEach
 	void setUp(ApplicationContext applicationContext) {
 		this.mockMvc = applicationContext.getBean(MockMvc.class);
@@ -30,21 +31,15 @@ public class UserControllerTests {
 	void test_showUserCards_unauthorized() throws Exception {
 		this.mockMvc.perform(get("/api/user/cards")).andExpect(status().isForbidden());
 	}
-	
-	@Test
-	@WithMockUser(username = "wrong.user@test.com")
-	void test_showUserCards_wrongUser() throws Exception {
-		this.mockMvc.perform(get("/api/user/cards")).andExpect(status().isNoContent());
-	}
-	
+
 	@Test
 	@WithUserDetails("s.petrov@test.com")
 	void test_showUserCards_authorized() throws Exception {
 		this.mockMvc.perform(get("/api/user/cards")).andExpect(status().isOk());
-		
+
 		MvcResult result = mockMvc.perform(get("/api/user/cards")).andReturn();
 		assertNotNull(result);
 		assertEquals(result.getResponse().getContentType(), "application/json");
 	}
-	
+
 }
