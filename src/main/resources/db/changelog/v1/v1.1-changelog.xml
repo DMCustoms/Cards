@@ -37,6 +37,9 @@
             <column name="card_number" type="bytea">
                 <constraints nullable="false" unique="true"/>
             </column>
+            <column name="is_block_request" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <sql>
         	ALTER TABLE cards ADD CONSTRAINT chk_balance CHECK (card_balance >= 0);

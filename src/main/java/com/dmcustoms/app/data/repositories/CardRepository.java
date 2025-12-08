@@ -14,4 +14,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 	
 	public Optional<Card> findCardByCardNumber(String cardNumber);
 	
+	public List<Card> findCardsByIsBlockRequest(Boolean isBlockRequest);
+	
 }

@@ -24,6 +24,8 @@ import com.dmcustoms.app.data.dto.AddCardToUserDTO;
 import com.dmcustoms.app.data.dto.CardCreateDTO;
 import com.dmcustoms.app.data.dto.SetLimitsDTO;
 import com.dmcustoms.app.data.dto.UserCreateDTO;
+import com.dmcustoms.app.data.repositories.CardRepository;
+import com.dmcustoms.app.data.entities.Card;
 
 import tools.jackson.databind.ObjectMapper;
 
@@ -36,6 +38,9 @@ public class AdminControllerTests {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private CardRepository cardRepository;
 
 	@BeforeEach
 	void setUp(ApplicationContext applicationContext) {
@@ -150,6 +155,34 @@ public class AdminControllerTests {
 	void test_activateCard_authorized_activated() throws Exception {
 		this.mockMvc.perform(patch("/api/admin/cards/activate/2202202044507626").with(csrf()))
 				.andExpect(status().isOk());
+	}
+
+//	Get block requests
+
+	@Test
+	void test_getCardsWithBlockRequests_unauthorized() throws Exception {
+		this.mockMvc.perform(get("/api/admin/cards/block-requests").with(csrf())).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("s.petrov@test.com")
+	void test_getCardsWithBlockRequests_notAdmin() throws Exception {
+		this.mockMvc.perform(get("/api/admin/cards/block-requests").with(csrf())).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_getCardsWithBlockRequests_noCardsWithBlockRequests() throws Exception {
+		this.mockMvc.perform(get("/api/admin/cards/block-requests").with(csrf())).andExpect(status().isNoContent());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_getCardsWithBlockRequests_ok() throws Exception {
+		Card card = cardRepository.findById(16L).orElseThrow();
+		card.setIsBlockRequest(true);
+		cardRepository.save(card);
+		this.mockMvc.perform(get("/api/admin/cards/block-requests").with(csrf())).andExpect(status().isOk());
 	}
 
 //	Set limits tests
@@ -464,6 +497,92 @@ public class AdminControllerTests {
 				.perform(post("/api/admin/users/add-card").with(csrf()).contentType(MediaType.APPLICATION_JSON)
 						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+	}
+
+//	Block user tests
+
+	@Test
+	void test_blockUser_unauthorized() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/block/i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("s.petrov@test.com")
+	void test_blockUser_notAdmin() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/block/i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_blockUser_authorized_notFoundUser() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/block/i.i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_blockUser_authorized_blocked() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/block/i.ivanov@test.com").with(csrf())).andExpect(status().isOk());
+	}
+
+//	Activate user tests
+
+	@Test
+	void test_activateUser_unauthorized() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/activate/i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("s.petrov@test.com")
+	void test_activateUser_notAdmin() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/activate/i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_activateUser_authorized_notFoundUser() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/activate/i.i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_activateUser_authorized_blocked() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/activate/i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isOk());
+	}
+
+//	Delete user tests
+
+	@Test
+	void test_deleteUser_unauthorized() throws Exception {
+		this.mockMvc.perform(delete("/api/admin/users/i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("s.petrov@test.com")
+	void test_deleteUser_notAdmin() throws Exception {
+		this.mockMvc.perform(delete("/api/admin/users/i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_deleteUSer_authorized_notFoundUSer() throws Exception {
+		this.mockMvc.perform(delete("/api/admin/users/i.i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_deleteUser_authorized_deleted() throws Exception {
+		this.mockMvc.perform(delete("/api/admin/users/i.ivanov@test.com").with(csrf()))
+				.andExpect(status().isNoContent());
 	}
 
 }

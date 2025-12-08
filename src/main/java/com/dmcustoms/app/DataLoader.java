@@ -27,18 +27,18 @@ public class DataLoader {
 			if (userRepository.count() == 0 && cardRepository.count() == 0) {
 				Card[] cards = new Card[30];
 				cards[0] = new Card("2202202044507626", Instant.now().plus(Duration.ofDays(1825)), CardStatus.ACTIVE,
-						12350.94, 100000000.00, 100000000.00);
+						12350.94, 100000000.00, 100000000.00, false);
 				cardRepository.save(cards[0]);
 				for (int i = 1; i < cards.length; i++) {
 					String cardNumber = generateValidLuhn();
 					double balance = Math.round((Math.random() * 100000) * 100.0) / 100.0;
 					cards[i] = new Card(cardNumber, Instant.now().plus(Duration.ofDays(1825)), CardStatus.ACTIVE,
-							balance, 100000000.00, 100000000.00);
+							balance, 100000000.00, 100000000.00, false);
 					cardRepository.save(cards[i]);
 				}
 
 				Card cardWithoutOwner = new Card("4333780415293668", Instant.now().plus(Duration.ofDays(1825)),
-						CardStatus.ACTIVE, 12350.94, 100000000.00, 100000000.00);
+						CardStatus.ACTIVE, 12350.94, 100000000.00, 100000000.00, false);
 
 				cardRepository.save(cardWithoutOwner);
 

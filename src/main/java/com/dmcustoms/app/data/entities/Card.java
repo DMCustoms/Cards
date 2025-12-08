@@ -59,4 +59,8 @@ public class Card {
 	@NonNull
 	private Double LimitPerMonth;
 	
+	@Column(name = "is_block_request")
+	@NonNull
+	private Boolean isBlockRequest;
+	
 }

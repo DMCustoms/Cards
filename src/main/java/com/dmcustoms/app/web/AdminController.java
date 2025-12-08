@@ -70,7 +70,7 @@ public class AdminController {
 		}
 		Card card = new Card(cardCreateDTO.getCardNumber(), Instant.now().plus(Duration.ofDays(1825)),
 				CardStatus.ACTIVE, cardCreateDTO.getBalance(), cardCreateDTO.getLimitPerDay(),
-				cardCreateDTO.getLimitPerMonth());
+				cardCreateDTO.getLimitPerMonth(), false);
 		try {
 			Card savedCard = cardRepository.save(card);
 			CardShowDTO savedCardToResponse = new CardShowDTO(savedCard.getCardNumber(), savedCard.getExpiredAt(),
@@ -112,6 +112,22 @@ public class AdminController {
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " not found"));
+		}
+	}
+	
+	@GetMapping("/cards/block-requests")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> getCardsWithBlockRequests() {
+		List<Card> cardsWithBlockRequest = cardRepository.findCardsByIsBlockRequest(true);
+		if (!cardsWithBlockRequest.isEmpty()) {
+			List<CardShowDTO> cardsToResponse = new ArrayList<CardShowDTO>();
+			for (Card card : cardsWithBlockRequest) {
+				cardsToResponse.add(new CardShowDTO(card.getCardNumber(), card.getExpiredAt(), card.getStatus(),
+						card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth()));
+			}
+			return ResponseEntity.status(HttpStatus.OK).body(cardsToResponse);
+		} else {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 	}
 
@@ -280,5 +296,48 @@ public class AdminController {
 		userRepository.save(user);
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
+	
+	@PatchMapping("/users/block/{email}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> blockUser(@PathVariable String email) {
+		Optional<User> optionalUser = userRepository.findUserByEmail(email);
+		if (optionalUser.isPresent()) {
+			User user = optionalUser.get();
+			user.setIsAccountNonLocked(false);
+			userRepository.save(user);
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ResponseErrorDTO("User with email " + email + " not found"));
+		}
+	}
+	
+	@PatchMapping("/users/activate/{email}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> activateUser(@PathVariable String email) {
+		Optional<User> optionalUser = userRepository.findUserByEmail(email);
+		if (optionalUser.isPresent()) {
+			User user = optionalUser.get();
+			user.setIsAccountNonLocked(true);
+			userRepository.save(user);
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ResponseErrorDTO("User with email " + email + " not found"));
+		}
+	}
 
+	@DeleteMapping("/users/{email}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> deleteUser(@PathVariable String email) {
+		Optional<User> optionalUser = userRepository.findUserByEmail(email);
+		if (optionalUser.isPresent()) {
+			userRepository.delete(optionalUser.get());
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ResponseErrorDTO("User with email " + email + " not found"));
+		}
+	}
+	
 }
