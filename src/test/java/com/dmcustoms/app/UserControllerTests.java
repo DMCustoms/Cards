@@ -1,8 +1,9 @@
 package com.dmcustoms.app;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,8 @@ public class UserControllerTests {
 		this.mockMvc = applicationContext.getBean(MockMvc.class);
 	}
 
+//	Get user cards tests
+	
 	@Test
 	void test_showUserCards_unauthorized() throws Exception {
 		this.mockMvc.perform(get("/api/user/cards")).andExpect(status().isForbidden());
@@ -40,6 +43,34 @@ public class UserControllerTests {
 		MvcResult result = mockMvc.perform(get("/api/user/cards")).andReturn();
 		assertNotNull(result);
 		assertEquals(result.getResponse().getContentType(), "application/json");
+	}
+	
+//	Request to block card tests
+	
+	@Test
+	void test_requestBlockCard_unauthorized() throws Exception {
+		this.mockMvc.perform(patch("/api/user/block/2202202044507626").with(csrf()))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithUserDetails("s.petrov@test.com")
+	void test_requestBlockCard_userNotOwner() throws Exception {
+		this.mockMvc.perform(patch("/api/user/block/2202202044507626").with(csrf()))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("s.petrov@test.com")
+	void test_blockCard_authorized_notFoundCard() throws Exception {
+		this.mockMvc.perform(patch("/api/user/block/2653035107502819").with(csrf()))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("o.solomatin@test.com")
+	void test_blockCard_authorized_ok() throws Exception {
+		this.mockMvc.perform(patch("/api/user/block/2202202044507626").with(csrf())).andExpect(status().isOk());
 	}
 
 }

@@ -26,21 +26,14 @@ public class DataLoader {
 		return args -> {
 			if (userRepository.count() == 0 && cardRepository.count() == 0) {
 				Card[] cards = new Card[30];
-				cards[0] = new Card("2202202044507626", Instant.now().plus(Duration.ofDays(1825)), CardStatus.ACTIVE,
-						12350.94, 100000000.00, 100000000.00, false);
-				cardRepository.save(cards[0]);
-				for (int i = 1; i < cards.length; i++) {
+
+				for (int i = 0; i < cards.length; i++) {
 					String cardNumber = generateValidLuhn();
 					double balance = Math.round((Math.random() * 100000) * 100.0) / 100.0;
 					cards[i] = new Card(cardNumber, Instant.now().plus(Duration.ofDays(1825)), CardStatus.ACTIVE,
 							balance, 100000000.00, 100000000.00, false);
 					cardRepository.save(cards[i]);
 				}
-
-				Card cardWithoutOwner = new Card("4333780415293668", Instant.now().plus(Duration.ofDays(1825)),
-						CardStatus.ACTIVE, 12350.94, 100000000.00, 100000000.00, false);
-
-				cardRepository.save(cardWithoutOwner);
 
 				User[] users = new User[] { new User("Ivanov", "Petr", "Sergeevich", "i.ivanov@test.com",
 						passwordEncoder.encode("password"), true, true, true, true, Arrays.asList(Authorities.USER)),
@@ -82,11 +75,25 @@ public class DataLoader {
 					userRepository.save(user);
 				}
 
+				Card cardWithDefinedOwner = new Card("2202202044507626", Instant.now().plus(Duration.ofDays(1825)),
+						CardStatus.ACTIVE, 12350.94, 100000000.00, 100000000.00, false);
+
+				Card cardWithoutOwner = new Card("4333780415293668", Instant.now().plus(Duration.ofDays(1825)),
+						CardStatus.ACTIVE, 12350.94, 100000000.00, 100000000.00, false);
+
+				cardRepository.save(cardWithDefinedOwner);
+				cardRepository.save(cardWithoutOwner);
+
+				User definedUser = new User("Solomatin", "Oleg", "Andreevich", "o.solomatin@test.com",
+						passwordEncoder.encode("password"), true, true, true, true, Arrays.asList(Authorities.USER));
+				
 				User admin = new User("Sergeev", "Victor", "Konstantinovich", "v.sergeev@test.com",
 						passwordEncoder.encode("password"), true, true, true, true, Arrays.asList(Authorities.ADMIN));
 
-				userRepository.save(admin);
+				definedUser.addCard(cardWithDefinedOwner);
 
+				userRepository.save(definedUser);
+				userRepository.save(admin);
 			}
 		};
 	}
