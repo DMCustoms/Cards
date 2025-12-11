@@ -114,7 +114,7 @@ public class AdminController {
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " not found"));
 		}
 	}
-	
+
 	@GetMapping("/cards/block-requests")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getCardsWithBlockRequests() {
@@ -216,8 +216,8 @@ public class AdminController {
 			List<TransactionDTO> transactionsToResponse = new ArrayList<TransactionDTO>();
 			for (Transaction transaction : transactionsPage) {
 				transactionsToResponse.add(new TransactionDTO(transaction.getSource().getCardNumber(),
-						transaction.getRecipient().getCardNumber(), transaction.getType(), transaction.getDate(),
-						transaction.getValue()));
+						transaction.getRecipient() == null ? null : transaction.getRecipient().getCardNumber(),
+						transaction.getType(), transaction.getDate(), transaction.getValue()));
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(transactionsToResponse);
 		} else {
@@ -296,7 +296,7 @@ public class AdminController {
 		userRepository.save(user);
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
-	
+
 	@PatchMapping("/users/block/{email}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> blockUser(@PathVariable String email) {
@@ -311,7 +311,7 @@ public class AdminController {
 					.body(new ResponseErrorDTO("User with email " + email + " not found"));
 		}
 	}
-	
+
 	@PatchMapping("/users/activate/{email}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> activateUser(@PathVariable String email) {
@@ -339,5 +339,5 @@ public class AdminController {
 					.body(new ResponseErrorDTO("User with email " + email + " not found"));
 		}
 	}
-	
+
 }

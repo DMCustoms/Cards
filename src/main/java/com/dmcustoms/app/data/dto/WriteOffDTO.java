@@ -10,18 +10,14 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class TransferDTO {
-	
-	@NotBlank(message = "Source card number is required")
-	@CreditCardNumber(message = "Source card number is incorrect")
-	private final String cardSourceNumber;
-	
-	@NotBlank(message = "Recipient card number is required")
-	@CreditCardNumber(message = "Recipient card number is incorrect")
-	private final String cardRecipientNumber;
+public class WriteOffDTO {
+
+	@NotBlank(message = "Card number is required")
+	@CreditCardNumber(message = "Card number is incorrect")
+	private final String cardNumber;
 	
 	@NotNull(message = "Value is required")
 	@PositiveOrZero(message = "Must be most or equals zero")
 	private final Double value;
-
+	
 }
