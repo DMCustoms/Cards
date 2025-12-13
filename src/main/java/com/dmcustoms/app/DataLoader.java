@@ -33,6 +33,7 @@ public class DataLoader {
 				existingNumbers.add("7634768028741925");
 				existingNumbers.add("7278005134684082");
 				existingNumbers.add("4333780415293668");
+				existingNumbers.add("3010570969331598");
 
 				Card[] cards = new Card[30];
 				for (int i = 0; i < cards.length; i++) {
@@ -91,6 +92,8 @@ public class DataLoader {
 						CardStatus.ACTIVE, 12350.94, 100000000.00, 100000000.00, false);
 				Card cardWithDefinedOwner1_2 = new Card("7634768028741925", Instant.now().plus(Duration.ofDays(1825)),
 						CardStatus.ACTIVE, 100.00, 100000000.00, 100000000.00, false);
+				Card cardWithDefinedOwner_blocked = new Card("3010570969331598", Instant.now().plus(Duration.ofDays(1825)),
+						CardStatus.BLOCKED, 100.00, 100000000.00, 100000000.00, false);
 				Card cardWithDefinedOwner2 = new Card("7278005134684082", Instant.now().plus(Duration.ofDays(1825)),
 						CardStatus.ACTIVE, 125251.53, 75000.00, 100000.00, false);
 
@@ -99,6 +102,7 @@ public class DataLoader {
 
 				cardRepository.save(cardWithDefinedOwner1_1);
 				cardRepository.save(cardWithDefinedOwner1_2);
+				cardRepository.save(cardWithDefinedOwner_blocked);
 				cardRepository.save(cardWithDefinedOwner2);
 				cardRepository.save(cardWithoutOwner);
 
@@ -113,6 +117,7 @@ public class DataLoader {
 
 				definedUser1.addCard(cardWithDefinedOwner1_1);
 				definedUser1.addCard(cardWithDefinedOwner1_2);
+				definedUser1.addCard(cardWithDefinedOwner_blocked);
 				definedUser2.addCard(cardWithDefinedOwner2);
 
 				userRepository.save(definedUser1);

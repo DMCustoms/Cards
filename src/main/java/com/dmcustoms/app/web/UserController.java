@@ -35,6 +35,7 @@ import com.dmcustoms.app.data.entities.Transaction;
 import com.dmcustoms.app.data.entities.User;
 import com.dmcustoms.app.data.repositories.CardRepository;
 import com.dmcustoms.app.data.repositories.TransactionRepository;
+import com.dmcustoms.app.data.types.CardStatus;
 import com.dmcustoms.app.data.types.TransactionType;
 
 import jakarta.validation.Valid;
@@ -102,6 +103,10 @@ public class UserController {
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " is not found"));
 		}
 		Card card = optionalCard.get();
+		if (card.getStatus().equals(CardStatus.BLOCKED)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ResponseErrorDTO("Card " + cardNumber + " is blocked"));
+		}
 		if (!card.getOwner().getEmail().equals(user.getEmail())) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
 					"User with email " + user.getEmail() + " is not owner of the card " + cardNumber));
@@ -148,6 +153,14 @@ public class UserController {
 					.body(new ResponseErrorDTO("Card with card number " + cardRecipientNumber + " is not found"));
 		Card cardSource = cardSourceOptional.get();
 		Card cardRecipient = cardRecipientOptional.get();
+		if (cardSource.getStatus().equals(CardStatus.BLOCKED)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ResponseErrorDTO("Card " + cardSourceNumber + " is blocked"));
+		}
+		if (cardRecipient.getStatus().equals(CardStatus.BLOCKED)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ResponseErrorDTO("Card " + cardRecipientNumber + " is blocked"));
+		}
 		if (!cardSource.getOwner().getEmail().equals(user.getEmail()))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
 					"User with email " + user.getEmail() + " is not owner of the card " + cardSourceNumber));
