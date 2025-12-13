@@ -72,16 +72,11 @@ public class AdminController {
 				CardStatus.ACTIVE, cardCreateDTO.getBalance(), cardCreateDTO.getLimitPerDay(),
 				cardCreateDTO.getLimitPerMonth(), false);
 		try {
-			Card savedCard = cardRepository.save(card);
-			CardShowDTO savedCardToResponse = new CardShowDTO(savedCard.getCardNumber(), savedCard.getExpiredAt(),
-					savedCard.getStatus(), savedCard.getBalance(), savedCard.getLimitPerDay(),
-					savedCard.getLimitPerMonth());
-			return ResponseEntity.status(HttpStatus.CREATED).body(savedCardToResponse);
+			cardRepository.save(card);
+			return ResponseEntity.status(HttpStatus.CREATED).body(null);
 		} catch (DataIntegrityViolationException e) {
-			if (e.getLocalizedMessage().contains("ERROR: duplicate key value violates unique constraint"))
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body(new ResponseErrorDTO("Card with number " + card.getCardNumber() + " already exist"));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseErrorDTO(e.getMessage()));
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(
+					new ResponseErrorDTO("Card with card number " + cardCreateDTO.getCardNumber()) + " already exist");
 		}
 	}
 
@@ -95,7 +90,7 @@ public class AdminController {
 			cardRepository.save(card);
 			return ResponseEntity.status(HttpStatus.OK).body(null);
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " not found"));
 		}
 	}
@@ -110,7 +105,7 @@ public class AdminController {
 			cardRepository.save(card);
 			return ResponseEntity.status(HttpStatus.OK).body(null);
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " not found"));
 		}
 	}
@@ -151,7 +146,7 @@ public class AdminController {
 			cardRepository.save(card);
 			return ResponseEntity.status(HttpStatus.OK).body(null);
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("Card with card number " + setLimitsDTO.getCardNumber() + " not found"));
 		}
 	}
@@ -164,7 +159,7 @@ public class AdminController {
 			cardRepository.delete(optionalCard.get());
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " not found"));
 		}
 	}
@@ -194,8 +189,7 @@ public class AdminController {
 	public ResponseEntity<?> getCardsByUserEmail(@PathVariable String email) {
 		Optional<User> user = userRepository.findUserByEmail(email);
 		if (user.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new ResponseErrorDTO("User with email " + email + " not found"));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		List<Card> findedCardsByOwner = cardRepository.findCardsByOwner(user.get());
 		List<CardShowDTO> cardsToResponse = new ArrayList<CardShowDTO>();
 		for (Card card : findedCardsByOwner) {
@@ -238,15 +232,11 @@ public class AdminController {
 				userCreateDTO.getEmail(), passwordEncoder.encode(userCreateDTO.getPassword()), true, true, true, true,
 				Arrays.asList(Authorities.USER));
 		try {
-			User savedUser = userRepository.save(user);
-			UserShowDTO savedUserToResponse = new UserShowDTO(savedUser.getSurname(), savedUser.getName(),
-					savedUser.getLastname(), savedUser.getEmail());
-			return ResponseEntity.status(HttpStatus.CREATED).body(savedUserToResponse);
+			userRepository.save(user);
+			return ResponseEntity.status(HttpStatus.CREATED).body(null);
 		} catch (DataIntegrityViolationException e) {
-			if (e.getLocalizedMessage().contains("ERROR: duplicate key value violates unique constraint"))
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body(new ResponseErrorDTO("User with email " + user.getEmail() + " already exist"));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseErrorDTO(e.getMessage()));
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body(new ResponseErrorDTO("User with email " + userCreateDTO.getEmail() + " already exist"));
 		}
 	}
 
@@ -280,16 +270,16 @@ public class AdminController {
 		}
 		Optional<User> optionalUser = userRepository.findUserByEmail(addCardToUserDTO.getEmail());
 		if (optionalUser.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("User with Email " + addCardToUserDTO.getEmail() + " not found"));
 		Optional<Card> optionalCard = cardRepository.findCardByCardNumber(addCardToUserDTO.getCardNumber());
 		if (optionalCard.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
 					new ResponseErrorDTO("Card with card number " + addCardToUserDTO.getCardNumber() + " not found"));
 		Card card = optionalCard.get();
 		if (card.getOwner() != null)
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseErrorDTO(
-					"Card with card number " + addCardToUserDTO.getCardNumber() + " already has an owner"));
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseErrorDTO("Card with card number "
+					+ addCardToUserDTO.getCardNumber() + " already has an owner: " + card.getOwner().getEmail()));
 		User user = optionalUser.get();
 		user.addCard(card);
 		cardRepository.save(card);
@@ -307,7 +297,7 @@ public class AdminController {
 			userRepository.save(user);
 			return ResponseEntity.status(HttpStatus.OK).body(null);
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("User with email " + email + " not found"));
 		}
 	}
@@ -322,7 +312,7 @@ public class AdminController {
 			userRepository.save(user);
 			return ResponseEntity.status(HttpStatus.OK).body(null);
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("User with email " + email + " not found"));
 		}
 	}
@@ -335,7 +325,7 @@ public class AdminController {
 			userRepository.delete(optionalUser.get());
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("User with email " + email + " not found"));
 		}
 	}

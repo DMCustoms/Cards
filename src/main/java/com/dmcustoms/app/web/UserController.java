@@ -65,6 +65,26 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userCardsToResponse);
 	}
 
+	@PatchMapping("/block/{cardNumber}")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<?> requestBlockCard(@PathVariable String cardNumber, @AuthenticationPrincipal User user) {
+		Optional<Card> optionalCard = cardRepository.findCardByCardNumber(cardNumber);
+		if (optionalCard.isPresent()) {
+			Card card = optionalCard.get();
+			if (card.getOwner().getEmail().equals(user.getEmail())) {
+				card.setIsBlockRequest(true);
+				cardRepository.save(card);
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			} else {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
+						"User with email " + user.getEmail() + " is not owner of the card " + cardNumber));
+			}
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " is not found"));
+		}
+	}
+
 	@GetMapping("/transactions")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> getTransactions(@AuthenticationPrincipal User user,
@@ -78,13 +98,13 @@ public class UserController {
 		String cardNumber = requestUserTransactionsDTO.cardNumber();
 		Optional<Card> optionalCard = cardRepository.findCardByCardNumber(cardNumber);
 		if (optionalCard.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " not found"));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " is not found"));
 		}
 		Card card = optionalCard.get();
 		if (!card.getOwner().getEmail().equals(user.getEmail())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-					new ResponseErrorDTO("USer with email " + user.getEmail() + " not owner of card " + cardNumber));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
+					"User with email " + user.getEmail() + " is not owner of the card " + cardNumber));
 		}
 		String page = params.get("page");
 		String size = params.get("size");
@@ -105,26 +125,6 @@ public class UserController {
 		}
 	}
 
-	@PatchMapping("/block/{cardNumber}")
-	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<?> requestBlockCard(@PathVariable String cardNumber, @AuthenticationPrincipal User user) {
-		Optional<Card> optionalCard = cardRepository.findCardByCardNumber(cardNumber);
-		if (optionalCard.isPresent()) {
-			Card card = optionalCard.get();
-			if (card.getOwner().equals(user)) {
-				card.setIsBlockRequest(true);
-				cardRepository.save(card);
-				return ResponseEntity.status(HttpStatus.OK).body(null);
-			} else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseErrorDTO(
-						"User with email " + user.getEmail() + " is not owner of card " + cardNumber));
-			}
-		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new ResponseErrorDTO("Card with cardnumber " + cardNumber + " not found"));
-		}
-	}
-
 	@PostMapping("/transfer")
 	@PreAuthorize("hasRole('USER')")
 	@Transactional
@@ -141,19 +141,19 @@ public class UserController {
 		Optional<Card> cardSourceOptional = cardRepository.findCardByCardNumber(cardSourceNumber);
 		Optional<Card> cardRecipientOptional = cardRepository.findCardByCardNumber(cardRecipientNumber);
 		if (cardSourceOptional.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("Card with card number " + cardSourceNumber + " is not found"));
 		if (cardRecipientOptional.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("Card with card number " + cardRecipientNumber + " is not found"));
 		Card cardSource = cardSourceOptional.get();
 		Card cardRecipient = cardRecipientOptional.get();
 		if (!cardSource.getOwner().getEmail().equals(user.getEmail()))
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseErrorDTO(
-					"User with email " + user.getEmail() + " is not owner of card " + cardSourceNumber));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
+					"User with email " + user.getEmail() + " is not owner of the card " + cardSourceNumber));
 		if (!cardRecipient.getOwner().getEmail().equals(user.getEmail()))
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseErrorDTO(
-					"User with email " + user.getEmail() + " is not owner of card " + cardRecipientNumber));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
+					"User with email " + user.getEmail() + " is not owner of the card " + cardRecipientNumber));
 		if (cardSource.getBalance() < transferValue)
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(new ResponseErrorDTO("Insufficient funds on the card"));
@@ -181,12 +181,12 @@ public class UserController {
 		Double writeOffValue = writeOffDTO.getValue();
 		Optional<Card> cardOptional = cardRepository.findCardByCardNumber(cardNumber);
 		if (cardOptional.isEmpty())
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " is not found"));
 		Card card = cardOptional.get();
 		if (!card.getOwner().getEmail().equals(user.getEmail()))
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-					new ResponseErrorDTO("User with email " + user.getEmail() + " is not owner of card " + cardNumber));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
+					"User with email " + user.getEmail() + " is not owner of the card " + cardNumber));
 		if (card.getBalance() < writeOffValue)
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(new ResponseErrorDTO("Insufficient funds on the card"));

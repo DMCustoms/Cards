@@ -2,7 +2,8 @@ package com.dmcustoms.app.data.dto;
 
 import org.hibernate.validator.constraints.CreditCardNumber;
 
-public record RequestUserTransactionsDTO(
-		@CreditCardNumber(message = "Incorrect credit card number") String cardNumber) {
+import jakarta.validation.constraints.NotBlank;
 
+public record RequestUserTransactionsDTO(
+		@CreditCardNumber(message = "Card number is incorrect") @NotBlank(message = "Card number is required") String cardNumber) {
 }

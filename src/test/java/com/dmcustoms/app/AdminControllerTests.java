@@ -87,7 +87,7 @@ public class AdminControllerTests {
 		this.mockMvc
 				.perform(post("/api/admin/cards/create").with(csrf()).contentType(MediaType.APPLICATION_JSON)
 						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isConflict());
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class AdminControllerTests {
 	@WithUserDetails("v.sergeev@test.com")
 	void test_blockCard_authorized_notFoundCard() throws Exception {
 		this.mockMvc.perform(patch("/api/admin/cards/block/2202202044507000").with(csrf()))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -147,7 +147,7 @@ public class AdminControllerTests {
 	@WithUserDetails("v.sergeev@test.com")
 	void test_activateCard_authorized_notFoundCard() throws Exception {
 		this.mockMvc.perform(patch("/api/admin/cards/activate/2202202044507000").with(csrf()))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -225,7 +225,7 @@ public class AdminControllerTests {
 		this.mockMvc
 				.perform(patch("/api/admin/cards/limits").with(csrf()).contentType(MediaType.APPLICATION_JSON)
 						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -256,8 +256,7 @@ public class AdminControllerTests {
 	@Test
 	@WithUserDetails("v.sergeev@test.com")
 	void test_deleteCard_authorized_notFoundCard() throws Exception {
-		this.mockMvc.perform(delete("/api/admin/cards/2202202044507000").with(csrf()))
-				.andExpect(status().isBadRequest());
+		this.mockMvc.perform(delete("/api/admin/cards/2202202044507000").with(csrf())).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -312,7 +311,7 @@ public class AdminControllerTests {
 	@Test
 	@WithUserDetails("v.sergeev@test.com")
 	void test_getUserCardsByUserEmail_authorized_invalidEmail() throws Exception {
-		this.mockMvc.perform(get("/api/admin/cards/i.i.ivanov@test.com")).andExpect(status().isBadRequest());
+		this.mockMvc.perform(get("/api/admin/cards/i.i.ivanov@test.com")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -394,7 +393,7 @@ public class AdminControllerTests {
 		this.mockMvc
 				.perform(post("/api/admin/users/create").with(csrf()).contentType(MediaType.APPLICATION_JSON)
 						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isConflict());
 	}
 
 	@Test
@@ -486,7 +485,7 @@ public class AdminControllerTests {
 		this.mockMvc
 				.perform(post("/api/admin/users/add-card").with(csrf()).contentType(MediaType.APPLICATION_JSON)
 						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isConflict());
 	}
 
 	@Test
@@ -518,7 +517,7 @@ public class AdminControllerTests {
 	@WithUserDetails("v.sergeev@test.com")
 	void test_blockUser_authorized_notFoundUser() throws Exception {
 		this.mockMvc.perform(patch("/api/admin/users/block/i.i.ivanov@test.com").with(csrf()))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -546,7 +545,7 @@ public class AdminControllerTests {
 	@WithUserDetails("v.sergeev@test.com")
 	void test_activateUser_authorized_notFoundUser() throws Exception {
 		this.mockMvc.perform(patch("/api/admin/users/activate/i.i.ivanov@test.com").with(csrf()))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -575,7 +574,7 @@ public class AdminControllerTests {
 	@WithUserDetails("v.sergeev@test.com")
 	void test_deleteUSer_authorized_notFoundUSer() throws Exception {
 		this.mockMvc.perform(delete("/api/admin/users/i.i.ivanov@test.com").with(csrf()))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test

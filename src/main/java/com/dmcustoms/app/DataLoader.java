@@ -2,7 +2,9 @@ package com.dmcustoms.app;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.boot.CommandLineRunner;
@@ -20,15 +22,25 @@ import com.dmcustoms.app.data.types.CardStatus;
 @Configuration
 public class DataLoader {
 
+	private List<String> existingNumbers = new ArrayList<String>();
+
 	@Bean
 	CommandLineRunner loadInitialTestData(UserRepository userRepository, CardRepository cardRepository,
 			PasswordEncoder passwordEncoder) {
 		return args -> {
 			if (userRepository.count() == 0 && cardRepository.count() == 0) {
-				Card[] cards = new Card[30];
+				existingNumbers.add("2202202044507626");
+				existingNumbers.add("7634768028741925");
+				existingNumbers.add("7278005134684082");
+				existingNumbers.add("4333780415293668");
 
+				Card[] cards = new Card[30];
 				for (int i = 0; i < cards.length; i++) {
 					String cardNumber = generateValidLuhn();
+					if (existingNumbers.contains(cardNumber)) {
+						i--;
+						continue;
+					}
 					double balance = Math.round((Math.random() * 100000) * 100.0) / 100.0;
 					cards[i] = new Card(cardNumber, Instant.now().plus(Duration.ofDays(1825)), CardStatus.ACTIVE,
 							balance, 100000000.00, 100000000.00, false);
@@ -75,25 +87,38 @@ public class DataLoader {
 					userRepository.save(user);
 				}
 
-				Card cardWithDefinedOwner = new Card("2202202044507626", Instant.now().plus(Duration.ofDays(1825)),
+				Card cardWithDefinedOwner1_1 = new Card("2202202044507626", Instant.now().plus(Duration.ofDays(1825)),
 						CardStatus.ACTIVE, 12350.94, 100000000.00, 100000000.00, false);
+				Card cardWithDefinedOwner1_2 = new Card("7634768028741925", Instant.now().plus(Duration.ofDays(1825)),
+						CardStatus.ACTIVE, 100.00, 100000000.00, 100000000.00, false);
+				Card cardWithDefinedOwner2 = new Card("7278005134684082", Instant.now().plus(Duration.ofDays(1825)),
+						CardStatus.ACTIVE, 125251.53, 75000.00, 100000.00, false);
 
 				Card cardWithoutOwner = new Card("4333780415293668", Instant.now().plus(Duration.ofDays(1825)),
 						CardStatus.ACTIVE, 12350.94, 100000000.00, 100000000.00, false);
 
-				cardRepository.save(cardWithDefinedOwner);
+				cardRepository.save(cardWithDefinedOwner1_1);
+				cardRepository.save(cardWithDefinedOwner1_2);
+				cardRepository.save(cardWithDefinedOwner2);
 				cardRepository.save(cardWithoutOwner);
 
-				User definedUser = new User("Solomatin", "Oleg", "Andreevich", "o.solomatin@test.com",
+				User definedUser1 = new User("Solomatin", "Oleg", "Andreevich", "o.solomatin@test.com",
 						passwordEncoder.encode("password"), true, true, true, true, Arrays.asList(Authorities.USER));
-				
+
+				User definedUser2 = new User("Levchenko", "Evgeniy", "Stepanovich", "e.levchenko@test.com",
+						passwordEncoder.encode("password"), true, true, true, true, Arrays.asList(Authorities.USER));
+
 				User admin = new User("Sergeev", "Victor", "Konstantinovich", "v.sergeev@test.com",
 						passwordEncoder.encode("password"), true, true, true, true, Arrays.asList(Authorities.ADMIN));
 
-				definedUser.addCard(cardWithDefinedOwner);
+				definedUser1.addCard(cardWithDefinedOwner1_1);
+				definedUser1.addCard(cardWithDefinedOwner1_2);
+				definedUser2.addCard(cardWithDefinedOwner2);
 
-				userRepository.save(definedUser);
+				userRepository.save(definedUser1);
+				userRepository.save(definedUser2);
 				userRepository.save(admin);
+
 			}
 		};
 	}
