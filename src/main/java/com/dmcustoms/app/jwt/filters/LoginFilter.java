@@ -37,7 +37,7 @@ import tools.jackson.databind.ObjectMapper;
 public class LoginFilter extends OncePerRequestFilter {
 
 	private final RequestMatcher requestMatcher = PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,
-			"/api/jwt/login");
+			"/api/auth/login");
 
 	private final SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
 

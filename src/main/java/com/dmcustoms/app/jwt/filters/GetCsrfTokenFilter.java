@@ -19,7 +19,7 @@ import tools.jackson.databind.ObjectMapper;
 public class GetCsrfTokenFilter extends OncePerRequestFilter {
 
 	private final RequestMatcher requestMatcher = PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET,
-			"/api/csrf");
+			"/api/auth/csrf");
 
 	private final CsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
 

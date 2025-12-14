@@ -35,7 +35,7 @@ import tools.jackson.databind.ObjectMapper;
 public class LogoutFilter extends OncePerRequestFilter {
 
 	private final RequestMatcher requestMatcher = PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,
-			"/api/jwt/logout");
+			"/api/auth/logout");
 
 	private final SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
 

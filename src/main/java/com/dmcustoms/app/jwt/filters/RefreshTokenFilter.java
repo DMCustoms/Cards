@@ -37,7 +37,7 @@ import tools.jackson.databind.ObjectMapper;
 public class RefreshTokenFilter extends OncePerRequestFilter {
 
 	private final RequestMatcher requestMatcher = PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,
-			"/api/jwt/refresh");
+			"/api/auth/refresh");
 
 	private final SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
 

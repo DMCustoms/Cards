@@ -69,9 +69,9 @@ public class SecurityConfigurer {
 		return http.with(jwtAuthenticationConfigurer, Customizer.withDefaults())
 				.sessionManagement(
 						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.securityMatcher(PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/api/jwt/**"))
+				.securityMatcher(PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/api/auth/**"))
 				.authorizeHttpRequests(authorizeHttpRequests -> {
-					authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/api/jwt/**").authenticated();
+					authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/api/auth/**").authenticated();
 				}).httpBasic(Customizer.withDefaults()).build();
 	}
 
@@ -85,7 +85,6 @@ public class SecurityConfigurer {
 				.authorizeHttpRequests(authorizeHttpRequests -> {
 					authorizeHttpRequests.requestMatchers("/api/user/**").hasRole("USER")
 							.requestMatchers("/api/admin/**").hasRole("ADMIN")
-							.requestMatchers(HttpMethod.GET, "/api/csrf").authenticated()
 							.requestMatchers(HttpMethod.GET, "/error").permitAll().anyRequest().denyAll();
 				}).build();
 	}

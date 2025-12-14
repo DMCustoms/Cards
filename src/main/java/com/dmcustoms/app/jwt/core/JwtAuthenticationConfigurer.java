@@ -50,7 +50,7 @@ public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthe
 		CsrfConfigurer<?> csrfConfigurer = builder.getConfigurer(CsrfConfigurer.class);
 		if (csrfConfigurer != null)
 			csrfConfigurer.ignoringRequestMatchers(
-					PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/jwt/login"));
+					PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/auth/login"));
 	}
 
 	@Override

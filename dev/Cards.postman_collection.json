@@ -78,7 +78,7 @@
 			"response": []
 		},
 		{
-			"name": "Login",
+			"name": "(AUTH) Login",
 			"request": {
 				"auth": {
 					"type": "basic",
@@ -98,13 +98,13 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{servUrl}}/api/jwt/login",
+					"raw": "{{servUrl}}/api/auth/login",
 					"host": [
 						"{{servUrl}}"
 					],
 					"path": [
 						"api",
-						"jwt",
+						"auth",
 						"login"
 					]
 				},
@@ -113,7 +113,7 @@
 			"response": []
 		},
 		{
-			"name": "Refresh token",
+			"name": "(AUTH) Refresh token",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -128,13 +128,13 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{servUrl}}/api/jwt/refresh",
+					"raw": "{{servUrl}}/api/auth/refresh",
 					"host": [
 						"{{servUrl}}"
 					],
 					"path": [
 						"api",
-						"jwt",
+						"auth",
 						"refresh"
 					]
 				},
@@ -143,7 +143,7 @@
 			"response": []
 		},
 		{
-			"name": "Logout",
+			"name": "(AUTH) Logout",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -158,13 +158,13 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{servUrl}}/api/jwt/logout",
+					"raw": "{{servUrl}}/api/auth/logout",
 					"host": [
 						"{{servUrl}}"
 					],
 					"path": [
 						"api",
-						"jwt",
+						"auth",
 						"logout"
 					]
 				},
@@ -213,27 +213,21 @@
 			"response": []
 		},
 		{
-			"name": "Get CSRF-token",
+			"name": "(AUTH) Get CSRF-token",
 			"request": {
 				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "",
-							"type": "string"
-						}
-					]
+					"type": "noauth"
 				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{servUrl}}/api/csrf",
+					"raw": "{{servUrl}}/api/auth/csrf",
 					"host": [
 						"{{servUrl}}"
 					],
 					"path": [
 						"api",
+						"auth",
 						"csrf"
 					]
 				},
