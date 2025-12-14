@@ -120,16 +120,6 @@ public class UserControllerTests {
 	}
 
 	@Test
-	@WithUserDetails("o.solomatin@test.com")
-	void test_getTransactions_authorized_cardIsBlocked() throws Exception {
-		RequestUserTransactionsDTO object = new RequestUserTransactionsDTO("3010570969331598");
-		this.mockMvc.perform(
-				get("/api/user/transactions?page=1&size=10").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
 	@WithUserDetails("e.levchenko@test.com")
 	void test_getTransactions_authorized_userIsNotOwnerOfCard() throws Exception {
 		RequestUserTransactionsDTO object = new RequestUserTransactionsDTO("2202202044507626");
@@ -301,6 +291,16 @@ public class UserControllerTests {
 				.perform(post("/api/user/writeoff").with(csrf()).contentType(MediaType.APPLICATION_JSON)
 						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithUserDetails("o.solomatin@test.com")
+	void test_writeOff_authorized_cardIsBlocked() throws Exception {
+		WriteOffDTO object = new WriteOffDTO("3010570969331598", 1000.00);
+		this.mockMvc
+				.perform(post("/api/user/writeoff").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isForbidden());
 	}
 
 	@Test

@@ -522,6 +522,13 @@ public class AdminControllerTests {
 
 	@Test
 	@WithUserDetails("v.sergeev@test.com")
+	void test_blockUser_authorized_blockHimself() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/block/v.sergeev@test.com").with(csrf()))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
 	void test_blockUser_authorized_blocked() throws Exception {
 		this.mockMvc.perform(patch("/api/admin/users/block/i.ivanov@test.com").with(csrf())).andExpect(status().isOk());
 	}
@@ -550,7 +557,14 @@ public class AdminControllerTests {
 
 	@Test
 	@WithUserDetails("v.sergeev@test.com")
-	void test_activateUser_authorized_blocked() throws Exception {
+	void test_activateUser_authorized_activateHimself() throws Exception {
+		this.mockMvc.perform(patch("/api/admin/users/activate/v.sergeev@test.com").with(csrf()))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_activateUser_authorized_activated() throws Exception {
 		this.mockMvc.perform(patch("/api/admin/users/activate/i.ivanov@test.com").with(csrf()))
 				.andExpect(status().isOk());
 	}
@@ -572,9 +586,16 @@ public class AdminControllerTests {
 
 	@Test
 	@WithUserDetails("v.sergeev@test.com")
-	void test_deleteUSer_authorized_notFoundUSer() throws Exception {
+	void test_deleteUSer_authorized_notFoundUser() throws Exception {
 		this.mockMvc.perform(delete("/api/admin/users/i.i.ivanov@test.com").with(csrf()))
 				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithUserDetails("v.sergeev@test.com")
+	void test_deleteUser_authorized_deleteHimself() throws Exception {
+		this.mockMvc.perform(delete("/api/admin/users/v.sergeev@test.com").with(csrf()))
+				.andExpect(status().isBadRequest());
 	}
 
 	@Test

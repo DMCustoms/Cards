@@ -61,7 +61,7 @@ public class UserController {
 		List<CardShowDTO> userCardsToResponse = new ArrayList<CardShowDTO>();
 		for (Card card : userCardsFromDB) {
 			userCardsToResponse.add(new CardShowDTO(card.getCardNumber(), card.getExpiredAt(), card.getStatus(),
-					card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth()));
+					card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth(), card.getOwner().getEmail()));
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(userCardsToResponse);
 	}
@@ -103,10 +103,6 @@ public class UserController {
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " is not found"));
 		}
 		Card card = optionalCard.get();
-		if (card.getStatus().equals(CardStatus.BLOCKED)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN)
-					.body(new ResponseErrorDTO("Card " + cardNumber + " is blocked"));
-		}
 		if (!card.getOwner().getEmail().equals(user.getEmail())) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
 					"User with email " + user.getEmail() + " is not owner of the card " + cardNumber));
@@ -197,6 +193,10 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ResponseErrorDTO("Card with card number " + cardNumber + " is not found"));
 		Card card = cardOptional.get();
+		if (card.getStatus().equals(CardStatus.BLOCKED)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ResponseErrorDTO("Card " + cardNumber + " is blocked"));
+		}
 		if (!card.getOwner().getEmail().equals(user.getEmail()))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseErrorDTO(
 					"User with email " + user.getEmail() + " is not owner of the card " + cardNumber));

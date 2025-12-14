@@ -76,7 +76,7 @@ public class AdminController {
 			return ResponseEntity.status(HttpStatus.CREATED).body(null);
 		} catch (DataIntegrityViolationException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(
-					new ResponseErrorDTO("Card with card number " + cardCreateDTO.getCardNumber()) + " already exist");
+					new ResponseErrorDTO("Card with card number " + cardCreateDTO.getCardNumber() + " already exists"));
 		}
 	}
 
@@ -118,7 +118,7 @@ public class AdminController {
 			List<CardShowDTO> cardsToResponse = new ArrayList<CardShowDTO>();
 			for (Card card : cardsWithBlockRequest) {
 				cardsToResponse.add(new CardShowDTO(card.getCardNumber(), card.getExpiredAt(), card.getStatus(),
-						card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth()));
+						card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth(), card.getOwner().getEmail()));
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(cardsToResponse);
 		} else {
@@ -175,7 +175,8 @@ public class AdminController {
 			List<CardShowDTO> cardsToResponse = new ArrayList<CardShowDTO>();
 			for (Card card : cardsPage) {
 				cardsToResponse.add(new CardShowDTO(card.getCardNumber(), card.getExpiredAt(), card.getStatus(),
-						card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth()));
+						card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth(),
+						card.getOwner() == null ? null : card.getOwner().getEmail()));
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(cardsToResponse);
 		} else {
@@ -189,12 +190,13 @@ public class AdminController {
 	public ResponseEntity<?> getCardsByUserEmail(@PathVariable String email) {
 		Optional<User> user = userRepository.findUserByEmail(email);
 		if (user.isEmpty())
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new ResponseErrorDTO("User with Email " + email + " not found"));
 		List<Card> findedCardsByOwner = cardRepository.findCardsByOwner(user.get());
 		List<CardShowDTO> cardsToResponse = new ArrayList<CardShowDTO>();
 		for (Card card : findedCardsByOwner) {
 			cardsToResponse.add(new CardShowDTO(card.getCardNumber(), card.getExpiredAt(), card.getStatus(),
-					card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth()));
+					card.getBalance(), card.getLimitPerDay(), card.getLimitPerMonth(), card.getOwner().getEmail()));
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(cardsToResponse);
 	}
@@ -236,7 +238,7 @@ public class AdminController {
 			return ResponseEntity.status(HttpStatus.CREATED).body(null);
 		} catch (DataIntegrityViolationException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
-					.body(new ResponseErrorDTO("User with email " + userCreateDTO.getEmail() + " already exist"));
+					.body(new ResponseErrorDTO("User with email " + userCreateDTO.getEmail() + " already exists"));
 		}
 	}
 
@@ -250,8 +252,8 @@ public class AdminController {
 			List<User> userPage = userRepository.findAll(pageRequest).getContent();
 			List<UserShowDTO> usersToResponse = new ArrayList<UserShowDTO>();
 			for (User user : userPage) {
-				usersToResponse
-						.add(new UserShowDTO(user.getSurname(), user.getName(), user.getLastname(), user.getEmail()));
+				usersToResponse.add(new UserShowDTO(user.getSurname(), user.getName(), user.getLastname(),
+						user.getEmail(), user.getIsAccountNonLocked()));
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(usersToResponse);
 		} else {
@@ -293,6 +295,10 @@ public class AdminController {
 		Optional<User> optionalUser = userRepository.findUserByEmail(email);
 		if (optionalUser.isPresent()) {
 			User user = optionalUser.get();
+			if (user.getAuthorities().contains(Authorities.ADMIN)) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(new ResponseErrorDTO("An administrator cannot block himself"));
+			}
 			user.setIsAccountNonLocked(false);
 			userRepository.save(user);
 			return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -308,6 +314,10 @@ public class AdminController {
 		Optional<User> optionalUser = userRepository.findUserByEmail(email);
 		if (optionalUser.isPresent()) {
 			User user = optionalUser.get();
+			if (user.getAuthorities().contains(Authorities.ADMIN)) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(new ResponseErrorDTO("An administrator cannot block himself"));
+			}
 			user.setIsAccountNonLocked(true);
 			userRepository.save(user);
 			return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -322,7 +332,12 @@ public class AdminController {
 	public ResponseEntity<?> deleteUser(@PathVariable String email) {
 		Optional<User> optionalUser = userRepository.findUserByEmail(email);
 		if (optionalUser.isPresent()) {
-			userRepository.delete(optionalUser.get());
+			User user = optionalUser.get();
+			if (user.getAuthorities().contains(Authorities.ADMIN)) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(new ResponseErrorDTO("An administrator cannot delete himself"));
+			}
+			userRepository.delete(user);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
