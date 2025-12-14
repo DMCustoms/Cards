@@ -1,0 +1,888 @@
+{
+	"info": {
+		"_postman_id": "fcaea7de-3e46-496e-a46e-fb82b7d566f8",
+		"name": "Cards",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44241593",
+		"_collection_link": "https://dmitriy-9133814.postman.co/workspace/Dmitriy's-Workspace~84833776-c83c-4b71-8a35-76bec35ddd90/collection/44241593-fcaea7de-3e46-496e-a46e-fb82b7d566f8?action=share&source=collection_link&creator=44241593"
+	},
+	"item": [
+		{
+			"name": "(USER) Get cards",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/user/cards",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"cards"
+					]
+				},
+				"description": "Получить все карты авторизованного пользователя."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Show users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/users?page=2&size=5",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				},
+				"description": "Вывести всех пользователей системы.\n\nНеобходима авторизация с привилегиями администратора.\n\nРеализована пагинация списка через параметры запроса."
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "v.sergeev@test.com",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/jwt/login",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"jwt",
+						"login"
+					]
+				},
+				"description": "Аутентификация пользователя.\n\nПолучение токенов доступа и обновления.\n\nBasic Auth."
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/jwt/refresh",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"jwt",
+						"refresh"
+					]
+				},
+				"description": "Получение нового токена доступа на основе токена обновления.\n\nBearer Token."
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/jwt/logout",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"jwt",
+						"logout"
+					]
+				},
+				"description": "Блокировка токена обновления и всех связанных с ним  \nтокенов доступа.\n\nBearer Token."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Create user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"surname\": \"Saveliev\",\n    \"name\": \"Alexey\",\n    \"lastname\": \"Anatolievich\",\n    \"email\": \"a.saveliev@test.com\",\n    \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servUrl}}/api/admin/users/create",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users",
+						"create"
+					]
+				},
+				"description": "Создание пользователя.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "Get CSRF-token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/csrf",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"csrf"
+					]
+				},
+				"description": "Получение CSRF-токена."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Create card",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cardNumber\": \"2745528383051998\",\n    \"balance\": 15000.00,\n    \"limitPerDay\": 10000000.00,\n    \"limitPerMonth\": 10000000.00 \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servUrl}}/api/admin/cards/create",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"cards",
+						"create"
+					]
+				},
+				"description": "Создание карты.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Block card",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/cards/block/7714992309954402",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"cards",
+						"block",
+						"7714992309954402"
+					]
+				},
+				"description": "Блокировка карты.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Activate card",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/cards/activate/7278005134684082",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"cards",
+						"activate",
+						"7278005134684082"
+					]
+				},
+				"description": "Активация карты.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Get cards",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/cards?page=0&size=10",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"cards"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				},
+				"description": "Получение списка всех карт.\n\nРеализована пагинация через параметры запроса.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Get cards by Email",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/cards/m.kolesnikova@test.com",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"cards",
+						"m.kolesnikova@test.com"
+					]
+				},
+				"description": "Получить карты конкретного пользователя.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Set limits",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cardNumber\": \"1149306128310431\",\n    \"limitPerDay\": 15000.00,\n    \"limitPerMonth\": 100000000.00 \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servUrl}}/api/admin/cards/limits",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"cards",
+						"limits"
+					]
+				},
+				"description": "Установить лимиты по карте.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Add card to user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cardNumber\": \"2745528383051998\",\n    \"email\": \"a.saveliev@test.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servUrl}}/api/admin/users/add-card",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users",
+						"add-card"
+					]
+				},
+				"description": "Назначить владельца карте.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Get block requests",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/cards/block-requests",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"cards",
+						"block-requests"
+					]
+				},
+				"description": "Получить список карт с запросами на блокировку.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Block user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/users/block/e.levchenko@test.com",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users",
+						"block",
+						"e.levchenko@test.com"
+					]
+				},
+				"description": "Заблокировать пользователя по email.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Activate user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/users/activate/i.ivanov@test.com",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users",
+						"activate",
+						"i.ivanov@test.com"
+					]
+				},
+				"description": "Активировать пользователя по email.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(USER) Block request",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/user/block/7714992309954402",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"block",
+						"7714992309954402"
+					]
+				},
+				"description": "Запросить блокировку карты.\n\nНеобходимо авторизоваться как пользователь."
+			},
+			"response": []
+		},
+		{
+			"name": "(USER) Transfer",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cardSourceNumber\" : \"2601111173133848\",\n    \"cardRecipientNumber\" : \"5567421794374530\",\n    \"value\" : 5000.00\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servUrl}}/api/user/transfer",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"transfer"
+					]
+				},
+				"description": "Перевести деньги между картами пользователя.\n\nНеобходимо авторизоваться как пользователь."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Get transactions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/transactions?page=0&size=10",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				},
+				"description": "Получить список всех транзакций.\n\nРеализована пагинация через параметры запроса.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(USER) Writeoff",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cardNumber\" : \"7714992309954402\",\n    \"value\" : 50.00\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servUrl}}/api/user/writeoff",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"writeoff"
+					]
+				},
+				"description": "Списать деньги с карты пользователя.\n\nНеобходимо авторизоваться как пользователь."
+			},
+			"response": []
+		},
+		{
+			"name": "(USER) Get transactions",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cardNumber\" : \"3010570969331598\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{servUrl}}/api/user/transactions?page=0&size=5",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				},
+				"description": "Получить список всех транзакций по карте пользователя.\n\nНомер карты передается в теле запроса.\n\nРеализована пагинация через параметры запроса.\n\nНеобходимо авторизоваться как пользователь."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Delete user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/users/i.ivanov@test.com",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"users",
+						"i.ivanov@test.com"
+					]
+				},
+				"description": "Удалить пользователя по email.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		},
+		{
+			"name": "(ADMIN) Delete card",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{servUrl}}/api/admin/cards/2745528383051998",
+					"host": [
+						"{{servUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"cards",
+						"2745528383051998"
+					]
+				},
+				"description": "Удалить карту по номеру.\n\nНеобходимы привилегии администратора."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "servUrl",
+			"value": "http://172.16.238.2:8080"
+		}
+	]
+}
