@@ -14,21 +14,21 @@ servers:
   - url: http://172.16.238.2:8080/api
 tags:
   - name: admin
-    description: Эндпоинты администратора системы
+    description: "Эндпоинты администратора системы"
   - name: user
-    description: Эндпоинты пользователя системы
+    description: "Эндпоинты пользователя системы"
   - name: auth
-    description: Эндпоинты аутентификации и авторизации
+    description: "Эндпоинты аутентификации и авторизации"
 paths:
   /admin/cards/create:
     post:
       tags:
         - admin
-      summary: Создание карты
-      description: Создание новой карты без владельца
+      summary: "Создание карты"
+      description: "Создание новой карты без владельца"
       operationId: createCard
       requestBody:
-        description: Тело запроса должно содержать номер карты, начальный баланс и лимиты
+        description: "Тело запроса должно содержать номер карты, начальный баланс и лимиты"
         content:
           application/json:
             schema:
@@ -36,23 +36,53 @@ paths:
         required: true
       responses:
         '201':
-          description: Создано успешно
+          description: "Создано успешно"
         '400':
-          description: Ошибки валидации входящих данных
+          description: "Ошибки валидации входящих данных"
           content:
             application/json:
-              example:
-                error:
-                  Credit card number is incorrect
+              examples:
+                cardNumberIsBlank:
+                  summary: "Поле \"Номер карты\" не заполнено"
+                  value:
+                    error: "Card number is required"
+                cardNumberIsIncorrect:
+                  summary: "Значение поля \"Номер карты\" некорректно"
+                  value:
+                    error: "Credit card number is incorrect"
+                balanceIsNull:
+                  summary: "Поле \"Баланс\" не заполнено"
+                  value:
+                    error: "Balance is required"
+                balanceIsNegative:
+                  summary: "Значение поля \"Баланс\" отрицательно"
+                  value:
+                    error: "Must be most or equals zero"
+                limitPerDayIsNull:
+                  summary: "Поле \"Дневной лимит\" не заполнено"
+                  value:
+                    error: "Limit per day is required"
+                limitPerDayIsNegative:
+                  summary: "Значение поля \"Дневной лимит\" отрицательно"
+                  value:
+                    error: "Must be most or equals zero"
+                limitPerMonthIsNull:
+                  summary: "Поле \"Месячный лимит\" не заполнено"
+                  value:
+                    error: "Limit per month is required"
+                limitPerMonthIsNegative:
+                  summary: "Значение поля \"Месячный лимит\" отрицательно"
+                  value:
+                    error: "Must be most or equals zero"
         '409':
-          description: Ошибка дублирования номера карты в базе данных
+          description: "Ошибка дублирования номера карты в базе данных"
           content:
             application/json:
               example:
                 error:
-                  Card with card number 2393051151453127 already exists
+                  "Card with card number 2393051151453127 already exists"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
@@ -62,28 +92,28 @@ paths:
     patch:
       tags:
         - admin
-      summary: Блокировка карты
-      description: Блокировка карты по номеру
+      summary: "Блокировка карты"
+      description: "Блокировка карты по номеру"
       operationId: blockCard
       parameters:
         - name: cardNumber
           in: path
-          description: Номер блокируемой карты
+          description: "Номер блокируемой карты"
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Карта заблокирована успешно
+          description: "Карта заблокирована успешно"
         '404':
-          description: Карта не найдена
+          description: "Карта не найдена"
           content:
             application/json:
               example:
                 error:
-                  Card with card number 2393051151453127 not found
+                  "Card with card number 2393051151453127 not found"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
@@ -93,28 +123,28 @@ paths:
     patch:
       tags:
         - admin
-      summary: Активация карты
-      description: Активация карты по номеру
+      summary: "Активация карты"
+      description: "Активация карты по номеру"
       operationId: activateCard
       parameters:
         - name: cardNumber
           in: path
-          description: Номер активируемой карты
+          description: "Номер активируемой карты"
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Карта активирована успешно
+          description: "Карта активирована успешно"
         '404':
-          description: Карта не найдена
+          description: "Карта не найдена"
           content:
             application/json:
               example:
                 error:
-                  Card with card number 2393051151453127 not found
+                  "Card with card number 2393051151453127 not found"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
@@ -124,20 +154,20 @@ paths:
     get:
       tags:
         - admin
-      summary: Запросы на блокировку
-      description: Вывод списка карт с запросами на блокировку
+      summary: "Запросы на блокировку"
+      description: "Вывод списка карт с запросами на блокировку"
       operationId: getCardsWithBlockRequests
       responses:
         '200':
-          description: Успешно
+          description: "Успешно"
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardShowDTO'
         '204':
-          description: Запросов на блокировку нет
+          description: "Запросов на блокировку нет"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
@@ -147,34 +177,56 @@ paths:
     patch:
       tags:
         - admin
-      summary: Установка лимитов
-      description: Установка лимитов по карте
+      summary: "Установка лимитов"
+      description: "Установка лимитов по карте"
       operationId: setLimits
       requestBody:
-        description: Тело запроса должно содержать номер карты и устанавливаемые лимиты
+        description: "Тело запроса должно содержать номер карты и устанавливаемые лимиты"
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SetLimitsDTO'
       responses:
         '200':
-          description: Успешно
+          description: "Успешно"
         '400':
-          description: Ошибки валидации входящих данных
+          description: "Ошибки валидации входящих данных"
           content:
             application/json:
-              example:
-                error:
-                  Credit card number is incorrect
+              examples:
+                cardNumberIsBlank:
+                  summary: "Поле \"Номер карты\" не заполнено"
+                  value:
+                    error: "Card number is required"
+                cardNumberIsIncorrect:
+                  summary: "Значение поля \"Номер карты\" некорректно"
+                  value:
+                    error: "Credit card number is incorrect"
+                limitPerDayIsNull:
+                  summary: "Поле \"Дневной лимит\" не заполнено"
+                  value:
+                    error: "Limit per day is required"
+                limitPerDayIsNegative:
+                  summary: "Значение поля \"Дневной лимит\" отрицательно"
+                  value:
+                    error: "Must be most or equals zero"
+                limitPerMonthIsNull:
+                  summary: "Поле \"Месячный лимит\" не заполнено"
+                  value:
+                    error: "Limit per month is required"
+                limitPerMonthIsNegative:
+                  summary: "Значение поля \"Месячный лимит\" отрицательно"
+                  value:
+                    error: "Must be most or equals zero"  
         '404':
-          description: Карта не найдена
+          description: "Карта не найдена"
           content:
             application/json:
               example:
                 error:
-                  Card with card number 2393051151453127 not found
+                  "Card with card number 2393051151453127 not found"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
@@ -184,28 +236,28 @@ paths:
     delete:
       tags:
         - admin
-      summary: Удаление карты
-      description: Удаление карты по номеру
+      summary: "Удаление карты"
+      description: "Удаление карты по номеру"
       operationId: deleteCard
       parameters:
         - name: cardNumber
           in: path
-          description: Номер удаляемой карты
+          description: "Номер удаляемой карты"
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: Удалено успешно
+          description: "Удалено успешно"
         '404':
-          description: Карта не найдена
+          description: "Карта не найдена"
           content:
             application/json:
               example:
                 error:
-                  Card with card number 2393051151453127 not found
+                  "Card with card number 2393051151453127 not found"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
@@ -215,38 +267,38 @@ paths:
     get:
       tags:
         - admin
-      summary: Список карт
-      description: Вывод списка всех карт с пагинацией
+      summary: "Список карт"
+      description: "Вывод списка всех карт с пагинацией"
       operationId: getAllCards
       parameters:
         - name: page
           in: query
-          description: Порядковый номер страницы
+          description: "Порядковый номер страницы"
           required: true
           schema:
             type: string
         - name: size
           in: query
-          description: Размер страницы
+          description: "Размер страницы"
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Успешно
+          description: "Успешно"
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardShowDTO'
         '400':
-          description: Неверные параметры запроса
+          description: "Неверные параметры запроса"
           content:
             application/json:
               example:
                 error:
-                  Query parameters are invalid
+                  "Query parameters are invalid"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
@@ -256,31 +308,32 @@ paths:
     get:
       tags:
         - admin
-      summary: Карты пользователя
-      description: Вывод списка карт конкретного пользователя
+      summary: "Карты пользователя"
+      description: "Вывод списка карт конкретного пользователя"
+      operationId: getCardsByUserEmail
       parameters:
         - name: email
           in: path
-          description: Email пользователя
+          description: "Email пользователя"
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Успешно
+          description: "Успешно"
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardShowDTO'
         '404':
-          description: Пользователь не найден
+          description: "Пользователь не найден"
           content:
             application/json:
               example:
                 error:
-                  User with Email i.ivanov@test.com not found
+                  "User with Email i.ivanov@test.com not found"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
@@ -290,42 +343,717 @@ paths:
     get:
       tags:
         - admin
-      summary: Список транзакций
-      description: Вывод списка всех транзакций с пагинацией
+      summary: "Список транзакций"
+      description: "Вывод списка всех транзакций с пагинацией"
+      operationId: getAllTransactions
       parameters:
         - name: page
           in: query
-          description: Порядковый номер страницы
+          description: "Порядковый номер страницы"
           required: true
           schema:
             type: string
         - name: size
           in: query
-          description: Размер страницы
+          description: "Размер страницы"
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Успешно
+          description: "Успешно"
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionDTO'
         '400':
-          description: Неверные параметры запроса
+          description: "Неверные параметры запроса"
           content:
             application/json:
               example:
                 error:
-                  Query parameters are invalid
+                  "Query parameters are invalid"
         default:
-          description: Непредвиденная ошибка
+          description: "Непредвиденная ошибка"
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
                 
+  /admin/users/create:
+    post:
+      tags:
+        - admin
+      summary: "Создание пользователя"
+      description: "Создание нового пользователя"
+      operationId: createUser
+      requestBody:
+        description: "Тело запроса должно содержать ФИО пользователя, email и пароль"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDTO'
+        required: true
+      responses:
+        '201':
+          description: "Создано успешно"
+        '400':
+          description: "Ошибки валидации входящих данных"
+          content:
+            application/json:
+              examples:
+                surnameIsBlank:
+                  summary: "Поле \"Фамилия\" не заполнено"
+                  value:
+                    error: "Surname is required"
+                nameIsBlank:
+                  summary: "Поле \"Имя\" не заполнено"
+                  value:
+                    error: "Name is required"
+                lastnameIsBlank:
+                  summary: "Поле \"Отчество\" не заполнено"
+                  value:
+                    error: "Lastname is required"
+                emailIsBlank:
+                  summary: "Поле \"Email\" не заполнено"
+                  value:
+                    error: "Email is required"
+                emailIsIncorrect:
+                  summary: "Значение поля \"Email\" некорректно"
+                  value:
+                    error: "Must be in Email format"
+                passwordIsBlank:
+                  summary: "Поле \"Пароль\" не заполнено"
+                  value:
+                    error: "Password is required"    
+        '409':
+          description: "Ошибка дублирования email пользователя в базе данных"
+          content:
+            application/json:
+              example:
+                error:
+                  "User with email i.ivanov@test.com already exists"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+                
+  /admin/users:
+    get:
+      tags:
+        - admin
+      summary: "Список пользователей"
+      description: "Вывод списка всех пользователей системы с пагинацией"
+      operationId: getAllUsers
+      parameters:
+        - name: page
+          in: query
+          description: "Порядковый номер страницы"
+          required: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: "Размер страницы"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Успешно"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserShowDTO'
+        '400':
+          description: "Неверные параметры запроса"
+          content:
+            application/json:
+              example:
+                error:
+                  "Query parameters are invalid"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'      
+      
+  /admin/users/add-card:
+    post:
+      tags:
+        - admin
+      summary: "Добавить карту пользователю"
+      description: "Добавление карты пользователю по email пользователя и номеру карты"
+      operationId: addCardToUser
+      requestBody:
+        description: "Тело запроса должно содержать ФИО пользователя, email и пароль"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCardToUserDTO'
+        required: true
+      responses:
+        '200':
+          description: "Успешно"
+        '400':
+          description: "Ошибки валидации входящих данных"
+          content:
+            application/json:
+              examples:
+                cardNumberIsBlank:
+                  summary: "Поле \"Номер карты\" не заполнено"
+                  value:
+                    error: "Card number is required"
+                cardNumberIsIncorrect:
+                  summary: "Значение поля \"Номер карты\" некорректно"
+                  value:
+                    error: "Credit card number is incorrect"
+                emailIsBlank:
+                  summary: "Поле \"Email\" не заполнено"
+                  value:
+                    error: "Email is required"
+                emailIsIncorrect:
+                  summary: "Значение поля \"Email\" некорректно"
+                  value:
+                    error: "Must be in Email format"
+        '404':
+          description: "Ресурс не найден"
+          content:
+            application/json:
+              examples:
+                userNotFound:
+                  summary: "Пользователь с заданным email не найден"
+                  value:
+                    error: "User with Email i.ivanov@test.com not found"
+                cardNotFound:
+                  summary: "Карта с заданным номером не найдена"
+                  value:
+                    error: "Card with card number 2393051151453127 not found"
+        '409':
+          description: "Карта уже имеет владельца"
+          content:
+            application/json:
+              example:
+                error:
+                  "Card with card number 2393051151453127 already has an owner: i.ivanov@test.com"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'  
+                
+  /admin/users/block/{email}:
+    patch:
+      tags:
+        - admin
+      summary: "Заблокировать пользователя"
+      description: "Заблокировать пользователя по email"
+      operationId: blockUser  
+      parameters:
+        - name: email
+          in: path
+          description: "Email пользователя"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Успешно"
+        '400':
+          description: "Администратор пытается заблокировать пользователя с ролью \"Администратор\""
+          content:
+            application/json:
+              example:
+                error:
+                  "An administrator cannot block himself"
+        '404':
+          description: "Пользователь не найден"
+          content:
+            application/json:
+              example:
+                error:
+                  "User with email i.ivanov@test.com not found"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+                
+  /admin/users/activate/{email}:
+    patch:
+      tags:
+        - admin
+      summary: "Активировать пользователя"
+      description: "Активировать пользователя по email"
+      operationId: activateUser  
+      parameters:
+        - name: email
+          in: path
+          description: "Email пользователя"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Успешно"
+        '400':
+          description: "Администратор пытается активировать пользователя с ролью \"Администратор\""
+          content:
+            application/json:
+              example:
+                error:
+                  "An administrator cannot block himself"
+        '404':
+          description: "Пользователь не найден"
+          content:
+            application/json:
+              example:
+                error:
+                  "User with email i.ivanov@test.com not found"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+                
+  /admin/users/{email}:
+    delete:
+      tags:
+        - admin
+      summary: "Удалить пользователя"
+      description: "Удалить пользователя по email"
+      operationId: deleteUser  
+      parameters:
+        - name: email
+          in: path
+          description: "Email пользователя"
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: "Удалено успешно"
+        '400':
+          description: "Администратор пытается удалить пользователя с ролью \"Администратор\""
+          content:
+            application/json:
+              example:
+                error:
+                  "An administrator cannot delete himself"
+        '404':
+          description: "Пользователь не найден"
+          content:
+            application/json:
+              example:
+                error:
+                  "User with email i.ivanov@test.com not found"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'               
+                
+  /user/cards:
+    get:
+      tags:
+        - user
+      summary: "Карты пользователя"
+      description: "Вывести список карт пользователя"
+      operationId: showUserCards
+      responses:
+        '200':
+          description: "Успешно"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardShowDTO'
+        '204':
+          description: "У пользователя нет карт"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'   
+                
+  /user/block/{cardNumber}:
+    patch:
+      tags:
+        - user
+      summary: "Запрос блокировки"
+      description: "Запросить блокировку карты по номеру карты"
+      operationId: requestBlockCard
+      parameters:
+        - name: cardNumber
+          in: path
+          description: "Номер карты"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Успешно"
+        '403':
+          description: "Пользователь не является владельцем карты"
+          content:  
+            application/json:
+              example:
+                error:
+                  "User with email i.ivanov@test.com is not owner of the card 2393051151453127"
+        '404':
+          description: "Карта не найдена"
+          content:
+            application/json:
+              example:
+                error:
+                  "Card with card number 2393051151453127 is not found"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+                
+  /user/transactions/{cardNumber}:
+    get:
+      tags:
+        - user
+      summary: "Транзакции пользователя"
+      description: "Вывод списка всех транзакций по конкретной карте пользователя"
+      operationId: getTransactions
+      parameters:
+        - name: cardNumber
+          in: path
+          description: "Номер карты"
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: "Порядковый номер страницы"
+          required: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: "Размер страницы"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Успешно"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDTO'
+        '400':
+          description: "Неверные параметры запроса"
+          content:
+            application/json:
+              example:
+                error:
+                  "Query parameters are invalid" 
+        '403':
+          description: "Пользователь не является владельцем карты"
+          content:  
+            application/json:
+              example:
+                error:
+                  "User with email i.ivanov@test.com is not owner of the card 2393051151453127"
+        '404':
+          description: "Карта не найдена"
+          content:
+            application/json:
+              example:
+                error:
+                  "Card with card number 2393051151453127 is not found"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'      
+                
+  /user/transfer:
+    post:
+      tags:
+        - user
+      summary: "Перевод средств"
+      description: "Выполнить перевод средств между картами пользователя"
+      operationId: transfer
+      requestBody:
+        description: "Тело запроса должно содержать номер карты источника, номер карты назначения и сумму"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferDTO'
+        required: true
+      responses:
+        '200':
+          description: "Успешно"
+        '400':
+          description: "Ошибки валидации входящих данных / Недостаточно средств"
+          content:
+            application/json:
+              examples:
+                cardSourceNumberIsBlank:
+                  summary: "Поле \"Номер карты источника\" не заполнено"
+                  value:
+                    error: "Source card number is required"
+                cardSourceNumberIsIncorrect:
+                  summary: "Значение поля \"Номер карты источника\" некорректно"
+                  value:
+                    error: "Source card number is incorrect"
+                cardRecipientNumberIsBlank:
+                  summary: "Поле \"Номер карты получателя\" не заполнено"
+                  value:
+                    error: "Recipient card number is required"
+                cardRecipientNumberIsIncorrect:
+                  summary: "Значение поля \"Номер карты получателя\" некорректно"
+                  value:
+                    error: "Recipient card number is incorrect"
+                valueIsNull:
+                  summary: "Поле \"Значение\" не заполнено"
+                  value:
+                    error: "Value is required"
+                valueIsNegative:
+                  summary: "Значение поля \"Значение\" отрицательно"
+                  value:
+                    error: "Must be most or equals zero"
+                insufficientFunds:
+                  summary: "Недостаточно средств"
+                  value:
+                    error: "Insufficient funds on the card"
+        '403':
+          description: "Карта заблокирована / Пользователь не является владельцем карты"
+          content:
+            application/json:
+              examples:
+                cardIsBlocked:
+                  summary: "Карта заблокирована"
+                  value:
+                    error: "Card 2393051151453127 is blocked"
+                userIsNotOwnerOfCard:
+                  summary: "Пользователь не владелец карты"
+                  value:
+                    error: "User with email i.ivanov@test.com is not owner of the card 2393051151453127"
+        '404':
+          description: "Карта не найдена"
+          content:
+            application/json:
+              example:
+                error:
+                  "Card with card number 2393051151453127 is not found"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'     
+                
+  /user/writeoff:
+    post:
+      tags:
+        - user
+      summary: "Списание средств"
+      description: "Выполнить списание средств с карты пользователя"
+      operationId: writeOff
+      requestBody:
+        description: "Тело запроса должно содержать номер карты и сумму"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WriteOffDTO'
+        required: true
+      responses:
+        '200':
+          description: "Успешно"
+        '400':
+          description: "Ошибки валидации входящих данных / Недостаточно средств / Превышен лимит"
+          content:
+            application/json:
+              examples:
+                cardNumberIsBlank:
+                  summary: "Поле \"Номер карты\" не заполнено"
+                  value:
+                    error: "Source card number is required"
+                cardNumberIsIncorrect:
+                  summary: "Значение поля \"Номер карты\" некорректно"
+                  value:
+                    error: "Source card number is incorrect"
+                valueIsNull:
+                  summary: "Поле \"Значение\" не заполнено"
+                  value:
+                    error: "Value is required"
+                valueIsNegative:
+                  summary: "Значение поля \"Значение\" отрицательно"
+                  value:
+                    error: "Must be most or equals zero"
+                insufficientFunds:
+                  summary: "Недостаточно средств"
+                  value:
+                    error: "Insufficient funds on the card"  
+                exceededDailyLimit:
+                  summary: "Превышен дневной лимит"
+                  value:
+                    error: "The user has exceeded the daily transaction limit"
+                exceededMonthlyLimit:
+                  summary: "Превышен месячный лимит"
+                  value:
+                    error: "The user has exceeded the monthly transaction limit"    
+        '403':
+          description: "Карта заблокирована / Пользователь не является владельцем карты"
+          content:
+            application/json:
+              examples:
+                cardIsBlocked:
+                  summary: "Карта заблокирована"
+                  value:
+                    error: "Card 2393051151453127 is blocked"
+                userIsNotOwnerOfCard:
+                  summary: "Пользователь не владелец карты"
+                  value:
+                    error: "User with email i.ivanov@test.com is not owner of the card 2393051151453127"
+        '404':
+          description: "Карта не найдена"
+          content:
+            application/json:
+              example:
+                error:
+                  "Card with card number 2393051151453127 is not found"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'  
+                
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: "Вход"
+      description: "Эндпоинт получения токенов доступа и обновления (Basic Auth)"
+      operationId: login
+      responses:
+        '200':
+          description: "Успешно"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokensDTO'
+        '401':
+          description: "Аутентификация не выполнена"
+          content:
+            application/json:
+              example:
+                status:
+                  401
+                message:
+                  "Unauthorized"
+                uri:
+                  "/api/auth/login"
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'    
+                
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: "Выход"
+      description: "Эндпоинт блокировки токена обновления и связанных с ним токенов доступа (Bearer Auth)"
+      operationId: logout
+      responses:
+        '200':
+          description: "Успешно"
+        '403':
+          description: "Ошибка токена"
+          content:
+            application/json:
+              example:
+                status:
+                  403
+                message:
+                  ""
+                uri:
+                  "/api/auth/logout"  
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO' 
+                
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      summary: "Обновление токена"
+      description: "Эндпоинт получения нового токена доступа на основе токена обновления (Bearer Auth)"
+      operationId: refresh
+      responses:
+        '200':
+          description: "Успешно"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenDTO'
+        '403':
+          description: "Ошибка токена"
+          content:
+            application/json:
+              example:
+                status:
+                  403
+                message:
+                  ""
+                uri:
+                  "/api/auth/refresh"  
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'     
+                
+  /auth/csrf:
+    get:
+      tags:
+        - auth
+      summary: "Получение CSRF-токена"
+      description: "Эндпоинт получения CSRF-токена"
+      operationId: csrf
+      responses:
+        '200':
+          description: "Успешно"
+          content:
+            application/json:
+              example:
+                headerName:
+                  "X-XSRF-TOKEN"
+                parameterName:
+                  "_csrf"
+                token:
+                  "2e24f6f2-030c-4437-86b1-fae401ab250d" 
+        default:
+          description: "Непредвиденная ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'          
+                    
 components:
   schemas:
     CardCreateDTO:
@@ -333,118 +1061,235 @@ components:
       properties:
         cardNumber:
           type: string
-          description: Номер создаваемой карты (должен проходить проверку алгоритмом Луна)
+          description: "Номер создаваемой карты (должен проходить проверку алгоритмом Луна)"
           example: 2393051151453127
         balance:
           type: number
           format: double
           minimum: 0
-          description: Баланс создаваемой карты (должен быть больше либо равен нулю)
+          description: "Баланс создаваемой карты (должен быть больше либо равен нулю)"
           example: 15234.97
         limitPerDay:
           type: number
           format: double
           minimum: 0
-          description: Дневной лимит на снятие средств (должен быть больше либо равен нулю)
+          description: "Дневной лимит на снятие средств (должен быть больше либо равен нулю)"
           example: 150000.00
         limitPerMonth:
           type: number
           format: double
           minimum: 0
-          description: Месячный лимит на снятие средств (должен быть больше либо равен нулю)
+          description: "Месячный лимит на снятие средств (должен быть больше либо равен нулю)"
           example: 150000.00
     CardShowDTO:
       type: object
       properties:
         cardNumber:
           type: string
-          description: Номер карты
+          description: "Номер карты"
           example: 2393051151453127
         expiredAt:
           type: string
           format: date-time
-          description: Срок действия
+          description: "Срок действия"
           example: 2030-12-12T19:52:00.407073Z
         status:
           type: string
-          description: Статус
+          description: "Статус"
           example: ACTIVE
         balance:
           type: number
           format: double
-          description: Баланс
+          description: "Баланс"
           example: 31960.65
         limitPerDay:
           type: number
           format: double
-          description: Дневной лимит на снятие средств
+          description: "Дневной лимит на снятие средств"
           example: 150000.00
         limitPerMonth:
           type: number
           format: double
-          description: Месячный лимит на снятие средств
+          description: "Месячный лимит на снятие средств"
           example: 150000.00
         ownerEmail:
           type: string
-          description: Email владельца карты
+          description: "Email владельца карты"
           example: i.ivanov@test.com
     SetLimitsDTO:
       type: object
       properties:
         cardNumber:
           type: string
-          description: Номер карты
+          description: "Номер карты"
           example: 2393051151453127
         limitPerDay:
           type: number
           format: double
-          description: Дневной лимит на снятие средств
+          description: "Дневной лимит на снятие средств"
           example: 150000.00
         limitPerMonth:
           type: number
           format: double
-          description: Месячный лимит на снятие средств
+          description: "Месячный лимит на снятие средств"
           example: 150000.00
     TransactionDTO:
       type: object
       properties:
         cardSourceNumber:
           type: string
-          description: Номер карты, с которой списываются средства
+          description: "Номер карты, с которой списываются средства"
           example: 2393051151453127
         cardRecipientNumber:
           type: string
-          description: Номер карты, на которую зачисляются средства 
-            (может быть null, при операции списания средств)
-          example: 2393051151453127
+          description: "Номер карты, на которую зачисляются средства (может быть null, при операции списания средств)"
+          example: 6737155755481909
         type:
           type: string
-          description: Тип транзакции (перевод между счетами, списание средств)
+          description: "Тип транзакции (перевод между счетами, списание средств)"
           example: TRANSFER
         date:
           type: string
           format: date-time
-          description: Дата проведения транзакции
+          description: "Дата проведения транзакции"
           example: 2030-12-12T19:52:00.407073Z
         value:
           type: number
           format: double
-          description: Значение транзакции
+          description: "Значение транзакции"
           example: 13421.34
+    UserCreateDTO:
+      type: object
+      properties:
+        surname:
+          type: string
+          description: "Фамилия пользователя"
+          example: Ivanov
+        name:
+          type: string
+          description: "Имя пользователя"
+          example: Ivan
+        lastname:
+          type: string
+          description: "Отчество пользователя"
+          example: Ivanovich
+        email:
+          type: string
+          format: email
+          description: "Email пользователя"
+          example: i.ivanov@test.com
+        password:
+          type: string
+          description: "Пароль"
+          example: password
+    UserShowDTO:
+      type: object
+      properties:
+        surname:
+          type: string
+          description: "Фамилия пользователя"
+          example: Ivanov
+        name:
+          type: string
+          description: "Имя пользователя"
+          example: Ivan
+        lastname:
+          type: string
+          description: "Отчество пользователя"
+          example: Ivanovich
+        email:
+          type: string
+          format: email
+          description: "Email пользователя"
+          example: i.ivanov@test.com  
+        isActive:
+          type: boolean
+          description: "Флаг состояния аккаунта (активен или заблокирован)"
+          example: true
+    AddCardToUserDTO:
+      type: object
+      properties:
+        cardNumber:
+          type: string
+          description: "Номер карты"
+          example: 2393051151453127
+        email:
+          type: string
+          format: email
+          description: "Email пользователя"
+          example: i.ivanov@test.com   
+    TransferDTO:
+      type: object
+      properties:
+        cardSourceNumber:
+          type: string
+          description: "Номер карты, с которой списываются средства"
+          example: 2393051151453127
+        cardRecipientNumber:
+          type: string
+          description: "Номер карты, на которую зачисляются средства"
+          example: 6737155755481909
+        value:
+          type: number
+          format: double
+          description: "Значение транзакции"
+          example: 13421.34
+    WriteOffDTO:
+      type: object
+      properties:
+        cardNumber:
+          type: string
+          description: "Номер карты, с которой списываются средства"
+          example: 2393051151453127
+        value:
+          type: number
+          format: double
+          description: "Значение транзакции"
+          example: 13421.34
+    TokensDTO:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: "Токен доступа"
+          example: "eyJraWQiOiIzMmNlN2QyYS1hMTNjLTQzYzItOGEwOS01ODI4MjczNmJiNmYiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpLml2YW5vdkB0ZXN0LmNvbSIsImV4cCI6MTc2NTkxNTczNCwiaWF0IjoxNzY1OTE1NDM0LCJqdGkiOiIzMmNlN2QyYS1hMTNjLTQzYzItOGEwOS01ODI4MjczNmJiNmYiLCJhdXRob3JpdGllcyI6WyJKV1RfQUNDRVNTIl19.2JnvGIMfEQ3stShw2OPLhMNP2S-xS1vioIgW1leOdjE"
+        accessTokenExpiredAt:
+          type: string
+          description: "Срок действия токена доступа"
+          example: "2025-12-16T20:08:54.990936185Z"
+        refreshToken:
+          type: string
+          description: "Токен обновления"
+          example: "eyJraWQiOiIzMmNlN2QyYS1hMTNjLTQzYzItOGEwOS01ODI4MjczNmJiNmYiLCJlbmMiOiJBMTI4R0NNIiwiYWxnIjoiZGlyIn0..VtUoZ4kibWHIs3tw.7iwkQVIlm8hMkDjbUUyvcMurxfFZab-ZO1DwRfJUkkziUAxs9hHSv5MNz7Pi45ZT3E3Z5gfDoWA8TuU58MZ2ltr2w-5uRq6kQVYKeGJPpJuA-zi8vn4MO7FCqvDu4sIyZhRgjvLySR25PyyR9Yj8AI0I4Qk49ZiW2X7p0D_SLZ7LD1Bz3FgQD2Qj64ZRhhirF_trNqw.BKKsQMGuiUEH8PkXz_1z6w"
+        refreshTokenExpiredAt:
+          type: string
+          description: "Срок действия токена обновления"
+          example: "2025-12-17T20:03:54.990897993Z"  
+    AccessTokenDTO:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: "Токен доступа"
+          example: "eyJraWQiOiIzMmNlN2QyYS1hMTNjLTQzYzItOGEwOS01ODI4MjczNmJiNmYiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpLml2YW5vdkB0ZXN0LmNvbSIsImV4cCI6MTc2NTkxNTczNCwiaWF0IjoxNzY1OTE1NDM0LCJqdGkiOiIzMmNlN2QyYS1hMTNjLTQzYzItOGEwOS01ODI4MjczNmJiNmYiLCJhdXRob3JpdGllcyI6WyJKV1RfQUNDRVNTIl19.2JnvGIMfEQ3stShw2OPLhMNP2S-xS1vioIgW1leOdjE"
+        accessTokenExpiredAt:
+          type: string
+          description: "Срок действия токена доступа"
+          example: "2025-12-16T20:08:54.990936185Z"
     ErrorDTO:
       type: object
       properties:
         status:
           type: integer
-          description: Статус код ошибки
+          description: "Статус код ошибки"
           example: 500
         message:
           type: string
-          description: Описание ошибки
+          description: "Описание ошибки"
           example: Internal server error
         uri:
           type: string
-          description: URI ошибки
+          description: "URI ошибки"
           example: /api/admin/cards/create
           
         

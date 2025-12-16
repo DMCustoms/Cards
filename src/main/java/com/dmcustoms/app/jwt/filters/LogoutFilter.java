@@ -26,7 +26,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import tools.jackson.databind.ObjectMapper;
 
 @Data
 @Slf4j
@@ -41,8 +40,6 @@ public class LogoutFilter extends OncePerRequestFilter {
 
 	private final DeactivatedTokenRepository deactivatedTokenRepository;
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -54,7 +51,6 @@ public class LogoutFilter extends OncePerRequestFilter {
 						&& user.getToken().getAuthorities().contains(JwtAuthorities.JWT_LOGOUT)) {
 					this.deactivatedTokenRepository.save(
 							new DeactivatedToken(user.getToken().getId(), Date.from(user.getToken().getExpiresAt())));
-					this.objectMapper.writeValue(response.getWriter(), "Logout success!");
 					return;
 				}
 			}
