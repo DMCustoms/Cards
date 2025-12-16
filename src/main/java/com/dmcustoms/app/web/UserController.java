@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dmcustoms.app.data.dto.CardShowDTO;
-import com.dmcustoms.app.data.dto.RequestUserTransactionsDTO;
 import com.dmcustoms.app.data.dto.ResponseErrorDTO;
 import com.dmcustoms.app.data.dto.TransactionDTO;
 import com.dmcustoms.app.data.dto.TransferDTO;
@@ -86,17 +85,10 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/transactions")
+	@GetMapping("/transactions/{cardNumber}")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> getTransactions(@AuthenticationPrincipal User user,
-			@RequestParam Map<String, String> params,
-			@RequestBody @Valid RequestUserTransactionsDTO requestUserTransactionsDTO, Errors errors) {
-		if (errors.hasErrors()) {
-			List<ResponseErrorDTO> messages = errors.getFieldErrors().stream()
-					.map(fieldError -> new ResponseErrorDTO(fieldError.getDefaultMessage())).toList();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messages);
-		}
-		String cardNumber = requestUserTransactionsDTO.cardNumber();
+			@RequestParam Map<String, String> params, @PathVariable String cardNumber) {
 		Optional<Card> optionalCard = cardRepository.findCardByCardNumber(cardNumber);
 		if (optionalCard.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)

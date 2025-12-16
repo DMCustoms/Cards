@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dmcustoms.app.data.dto.RequestUserTransactionsDTO;
 import com.dmcustoms.app.data.dto.TransferDTO;
 import com.dmcustoms.app.data.dto.WriteOffDTO;
 
@@ -86,66 +85,35 @@ public class UserControllerTests {
 
 	@Test
 	void test_getTransactions_unauthorized() throws Exception {
-		this.mockMvc.perform(get("/api/user/transactions?page=1&size=10")).andExpect(status().isForbidden());
-	}
-
-	@Test
-	@WithUserDetails("o.solomatin@test.com")
-	void test_getTransactions_authorized_blankFields() throws Exception {
-		RequestUserTransactionsDTO object = new RequestUserTransactionsDTO("");
-		this.mockMvc.perform(
-				get("/api/user/transactions?page=1&size=10").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
-	}
-
-	@Test
-	@WithUserDetails("o.solomatin@test.com")
-	void test_getTransactions_authorized_notValidFields() throws Exception {
-		RequestUserTransactionsDTO object = new RequestUserTransactionsDTO("1234123412341234");
-		this.mockMvc.perform(
-				get("/api/user/transactions?page=1&size=10").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		this.mockMvc.perform(get("/api/user/transactions/7634768028741925?page=1&size=10"))
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithUserDetails("o.solomatin@test.com")
 	void test_getTransactions_authorized_cardIsNotFound() throws Exception {
-		RequestUserTransactionsDTO object = new RequestUserTransactionsDTO("4922446341334532");
-		this.mockMvc.perform(
-				get("/api/user/transactions?page=1&size=10").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/api/user/transactions/4922446341334532?page=1&size=10").with(csrf()))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	@WithUserDetails("e.levchenko@test.com")
 	void test_getTransactions_authorized_userIsNotOwnerOfCard() throws Exception {
-		RequestUserTransactionsDTO object = new RequestUserTransactionsDTO("2202202044507626");
-		this.mockMvc.perform(
-				get("/api/user/transactions?page=1&size=10").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/api/user/transactions/2202202044507626?page=1&size=10").with(csrf()))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithUserDetails("o.solomatin@test.com")
 	void test_getTransactions_authorized_invalidQueryParams() throws Exception {
-		RequestUserTransactionsDTO object = new RequestUserTransactionsDTO("2202202044507626");
-		this.mockMvc
-				.perform(get("/api/user/transactions").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/api/user/transactions/2202202044507626").with(csrf()))
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	@WithUserDetails("o.solomatin@test.com")
 	void test_getTransactions_authorized_ok() throws Exception {
-		RequestUserTransactionsDTO object = new RequestUserTransactionsDTO("2202202044507626");
-		this.mockMvc.perform(
-				get("/api/user/transactions?page=1&size=10").with(csrf()).contentType(MediaType.APPLICATION_JSON)
-						.content(this.objectMapper.writeValueAsString(object)).accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/api/user/transactions/2202202044507626?page=1&size=10").with(csrf()))
 				.andExpect(status().isOk());
 	}
 

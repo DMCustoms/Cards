@@ -752,24 +752,16 @@
 				},
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"cardNumber\" : \"3010570969331598\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "{{servUrl}}/api/user/transactions?page=0&size=5",
+					"raw": "{{servUrl}}/api/user/transactions/0279924427197285?page=0&size=5",
 					"host": [
 						"{{servUrl}}"
 					],
 					"path": [
 						"api",
 						"user",
-						"transactions"
+						"transactions",
+						"0279924427197285"
 					],
 					"query": [
 						{
